@@ -3,12 +3,11 @@
  * Created by PhpStorm.
  * User: Grzegorz Chwiluk
  * Date: 2017-04-22
- * Time: 00:30
+ * Time: 01:27
  */
 require_once('head.php');
+$object = new Trees($db);
 
-$smarty->display('head.tpl');
-
-$smarty->display('index.tpl');
-
-$smarty->display('footer.tpl');
+if(isset($_GET['added'])){
+    $object->add($_POST['name']);
+}
