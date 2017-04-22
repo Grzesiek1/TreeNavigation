@@ -5,14 +5,12 @@
  * User: Grzegorz Chwiluk
  * Date: 2017-04-22
  * Time: 15:02
- * GENERATE_TREE - FILE TEMPORARY
  */
-
-require_once('../head.php');
+declare(strict_types = 1);
 
 class GenerateTree
 {
-    private $array_value, $array_name, $json;
+    private $array_value, $array_name, $json, $return;
 
     function __construct($db)
     {
@@ -23,7 +21,7 @@ class GenerateTree
     }
 
 
-    function generate_tree($json = false)
+    function generate_tree(Bool $json = false)
     {
         $this->json = $json;
 
@@ -31,42 +29,49 @@ class GenerateTree
         $res->execute();
 
         if ($this->json == true) {// json return data
-            
-            echo '[';
+
+            $this->return .= '[';
             while ($row = $res->fetch()) {
                 if ($this->check_have_child($row['id'])) {
                     $this->generate_child($row['id'], $row['name']);
                 } else {
                     if (!$this->whether_value_occurred($row['name'])) {
-                        echo '{text: "' . $row['name'] . '",},';
+                        $this->return .= '{"text": "' . $row['name'] . '"},';
                     }
                 }
             }
-            echo ']';
+            $this->return .= ']';
 
         } else {// <ul><li> return data
 
-            echo '<ul>';
+            $this->return .= '<ul>';
             while ($row = $res->fetch()) {
                 if ($this->check_have_child($row['id'])) {
                     $this->generate_child($row['id'], $row['name']);
                 } else {
                     if (!$this->whether_value_occurred($row['name'])) {
-                        echo '<li>' . $row['name'] . '</li>';
+                        $this->return .= '<li>' . $row['name'] . '</li>';
                     }
                 }
             }
-            echo '</ul>';
+            $this->return .= '</ul>';
         }
+
+        // remove char , before end block
+        if ($this->json == true){
+            $this->return = str_replace("},]", "}]", $this->return);
+        }
+
+        return $this->return;
     }
 
-    private function generate_child($id, $parent_name)
+    private function generate_child($id, String $parent_name)
     {
         if ($this->json == true) {// json return data
             $closed_tag = 0;
 
             if (!$this->whether_value_occurred($parent_name)) {
-                echo '{ text: "' . $parent_name . '"';
+                $this->return .= '{ "text": "' . $parent_name . '"';
             }
 
             $res = $this->db->prepare("SELECT id, name, parent, display_order FROM Trees WHERE parent = :id order by display_order");
@@ -75,28 +80,28 @@ class GenerateTree
 
             while ($row = $res->fetch()) {
                 if (!$this->whether_value_occurred($row['parent'])) {
-                    echo ',nodes: [';
+                    $this->return .= ',"nodes": [';
                     $closed_tag = 1;
                 }
 
                 if (!$this->whether_value_occurred($row['name'])) {
                     if ($this->check_have_child($row['id'])) {
-                        echo '{ text: "' . $row['name'] . '"';
+                        $this->return .= '{ "text": "' . $row['name'] . '"';
                         $this->generate_child($row['id'], $row['name']);
                     } else {
-                        echo '{ text: "' . $row['name'] . '",},';
+                        $this->return .= '{ "text": "' . $row['name'] . '"},';
                     }
                 }
             }
             if ($closed_tag == 1) {
-                echo ']';
-                echo '},';
+                $this->return .= ']';
+                $this->return .= '},';
             }
         } else {// <ul><li> return data
             $closed_tag = 0;
 
             if (!$this->whether_value_occurred($parent_name)) {
-                echo '<li>' . $parent_name;
+                $this->return .= '<li>' . $parent_name;
             }
 
             $res = $this->db->prepare("SELECT id, name, parent, display_order FROM Trees WHERE parent = :id order by display_order");
@@ -105,22 +110,21 @@ class GenerateTree
 
             while ($row = $res->fetch()) {
                 if (!$this->whether_value_occurred($row['parent'])) {
-                    echo '<ul>';
+                    $this->return .= '<ul>';
                     $closed_tag = 1;
                 }
 
                 if (!$this->whether_value_occurred($row['name'])) {
                     if ($this->check_have_child($row['id'])) {
-                        echo '<li>' . $row['name'] . '</li>';
+                        $this->return .= '<li>' . $row['name'] . '</li>';
                         $this->generate_child($row['id'], $row['name']);
                     } else {
-                        echo '<li>' . $row['name'] . '</li>';
+                        $this->return .= '<li>' . $row['name'] . '</li>';
                     }
                 }
             }
             if ($closed_tag == 1) {
-                echo '</ul>';
-                echo '</li>';
+                $this->return .= '</ul>';
             }
         }
     }
@@ -158,16 +162,3 @@ class GenerateTree
         }
     }
 }
-
-$object = new GenerateTree($db);
-$object->generate_tree(true);
-
-
-
-
-
-
-
-
-
-

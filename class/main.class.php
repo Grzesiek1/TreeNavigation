@@ -8,7 +8,7 @@
  */
 declare(strict_types = 1);
 
-class Trees
+class Main
 {
     function __construct($db)
     {
@@ -49,14 +49,6 @@ class Trees
 
         header('Location: ' . $_SERVER['HTTP_REFERER']);
     }
-
-    function get()
-    {
-        $res = $this->db->prepare("SELECT id, name, parent, display_order FROM Trees");
-        $res->execute();
-        return $this->array_change_xy($res->fetchAll());
-    }
-
 
     function delete()
     {

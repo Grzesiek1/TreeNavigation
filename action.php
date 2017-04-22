@@ -6,7 +6,7 @@
  * Time: 01:27
  */
 require_once('head.php');
-$object = new Trees($db);
+$object = new Main($db);
 
 if (isset($_GET['id'])) {
 

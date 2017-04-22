@@ -1,8 +1,6 @@
 body {
     font-family: Tahoma, Arial, Sans-serif;
     font-size: 12px;
-    width: 1000px;
-    margin: auto;
 }
 
 nav{
@@ -24,4 +22,13 @@ main{
     padding: 10px;
     width: 600px;
     border: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+#link {
+    font-size: 10px;
+    /*width: 250px;*/
+    /*margin: auto;*/
+    margin-bottom: -10px;
+    margin-right: -10px;
+    text-align: right;
 }

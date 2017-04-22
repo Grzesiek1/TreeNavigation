@@ -11,16 +11,19 @@ $smarty->display('head.tpl');
 
 if (isset($_GET['action'])) {
 
-    $object = new Trees($db);
+    $object = new Main($db);
 
-    if ($_GET['action'] == 'show') {
+    if ($_GET['action'] == 'show_jquery') {
+        $object = new GenerateTree($db);
 
+        $smarty->assign('json_data', $object->generate_tree(true));
+        $smarty->display('show_jquery.tpl');
 
-        $smarty->assign($object->get());
-        $smarty->display('show.tpl');
+    } elseif ($_GET['action'] == 'show_html') {
+        $object = new GenerateTree($db);
 
-    } elseif ($_GET['action'] == 'add') {
-        $smarty->display('add.tpl');
+        $smarty->assign('data', $object->generate_tree());
+        $smarty->display('show_html.tpl');
     }
 
 } else {

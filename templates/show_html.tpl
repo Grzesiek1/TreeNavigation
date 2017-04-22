@@ -1,3 +1,3 @@
 <main>
-HOME PAGE
+    {$data}
 </main>

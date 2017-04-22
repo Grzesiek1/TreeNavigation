@@ -8,16 +8,24 @@
 error_reporting(E_ALL);
 
 require_once('config.php');
-require_once('ExternalFiles/libs/Smarty.class.php');
-require_once('class/main.class.php');
 
 $dbc['dns'] = 'mysql:host=' . $dbc['host'] . ';dbname=' . $dbc['name'];
 $dbc['options'] = array(
     PDO::MYSQL_ATTR_INIT_COMMAND => $dbc['encode'],
 );
-$db = new PDO($dbc['dns'], $dbc['user'], $dbc['pass'], $dbc['options']);
-$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
+try{
+    $db = new PDO($dbc['dns'], $dbc['user'], $dbc['pass'], $dbc['options']);
+    $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die('Wystąpił błąd przy łączeniu z bazą danych.');
+}
+
 unset($dbc);
+
+require_once('ExternalFiles/libs/Smarty.class.php');
+require_once('class/Main.class.php');
+require_once('class/GenerateTree.class.php');
 
 $smarty = new Smarty();
 
