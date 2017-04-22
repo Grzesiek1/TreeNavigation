@@ -36,7 +36,9 @@ class GenerateTree
             $res3->execute();
 
             if ($res3->fetchColumn() > 0) {
-                echo '<li>' . $row['name'];
+                if (!$this->check_used_string($row['name'])) {
+                    echo '<li>' . $row['name'];
+                }
 
                 $res2 = $this->db->prepare("SELECT id, name, parent, display_order FROM Trees WHERE parent = :id order by display_order");
                 $res2->bindValue(':id', $row['id'], PDO::PARAM_INT);
@@ -46,14 +48,19 @@ class GenerateTree
                     if (!$this->check_used_value($row['parent'])) {
                         echo '<ul>';
                     }
-                    echo '<li>' . $row2['name'] . '</li>';
+
+                    if (!$this->check_used_string($row2['name'])) {
+                        echo '<li>' . $row2['name'] . '</li>';
+                    }
+
                 }
                 echo '</ul>';
                 echo '</li>';
             } else {
-                echo '<li>' . $row['name'] . '</li>';
+                if (!$this->check_used_string($row['name'])) {
+                    echo '<li>' . $row['name'] . '</li>';
+                }
             }
-
 
 
         }
