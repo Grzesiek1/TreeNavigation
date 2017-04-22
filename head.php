@@ -8,7 +8,7 @@
 error_reporting(E_ALL);
 
 require_once('config.php');
-require_once('libs/Smarty.class.php');
+require_once('ExternalFiles/libs/Smarty.class.php');
 require_once('class/main.class.php');
 
 $dbc['dns'] = 'mysql:host=' . $dbc['host'] . ';dbname=' . $dbc['name'];

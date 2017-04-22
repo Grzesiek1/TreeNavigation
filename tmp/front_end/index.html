@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+
+    <link href="bootstrap.css" rel="stylesheet">
+    <script src="../../ExternalFiles/media/js/jquery-3.2.1.js"></script>
+    <script src="bootstrap-treeview.mod.js"></script>
+    <style>
+        #link {
+            font-size: 10px;
+            /*width: 250px;*/
+            /*margin: auto;*/
+            margin-bottom: -10px;
+            margin-right: -10px;
+            text-align: right;
+        }
+    </style>
+
+</head>
+<body>
+
+
+<div class="container">
+
+    <div class="row">
+        <div class="col-sm-4">
+            <h2>Structure:</h2>
+            <div id="trees" class=""></div>
+        </div>
+
+    </div>
+
+
+    <script type="text/javascript">
+
+        $(function () {
+
+            var defaultData = [
+                {
+                    text: 'a',
+                    nodes: [
+                        {
+                            text: 'aa',
+                            nodes: [
+                                {
+                                    text: 'aaa <div id="link">(<a href="#left">LEFT</a> | <a href="#up">UP</a> | <a href="#down">DOWN</a> | <a href="#edit">EDIT</a> | <a href="#del">DEL</a> | <a href="#move_to">MOVE_TO</a> | <a href="#add">ADD_HERE</a>)</div>',
+                                },
+                                {
+                                    text: 'aab <div id="link">(<a href="#left">LEFT</a> | <a href="#up">UP</a> | <a href="#down">DOWN</a> | <a href="#edit">EDIT</a> | <a href="#del">DEL</a> | <a href="#move_to">MOVE_TO</a> | <a href="#add">ADD_HERE</a>)</div>',
+                                }
+                            ]
+                        },
+                        {
+                            text: 'ab',
+                        }
+                    ]
+                },
+                {
+                    text: 'b',
+                    nodes: [
+                        {
+                            text: 'ba',
+                        },
+                        {
+                            text: 'bb',
+                        },
+                    ]
+                },
+                {
+                    text: 'c',
+                },
+                {
+                    text: 'd',
+                },
+                {
+                    text: 'e',
+                }
+            ];
+
+
+            $('#trees').treeview({
+                data: defaultData
+            });
+
+
+        });
+    </script>
+
+    <form method="post" action="action.php?id=add">
+        Element "name": <input type="text" name="name"/>
+        <input type="submit" value="Add element"/>
+    </form>
+</body>
+</html>
