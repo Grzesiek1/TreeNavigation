@@ -8,12 +8,21 @@
 require_once('head.php');
 
 $smarty->display('head.tpl');
+
 if (isset($_GET['action'])) {
+
+    $object = new Trees($db);
+
     if ($_GET['action'] == 'show') {
+
+
+        $smarty->assign($object->get());
         $smarty->display('show.tpl');
+
     } elseif ($_GET['action'] == 'add') {
         $smarty->display('add.tpl');
     }
+
 } else {
     $smarty->display('index.tpl');
 }

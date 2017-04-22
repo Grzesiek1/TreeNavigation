@@ -7,6 +7,7 @@
     <meta name="description" content="Trees navigation - example project"/>
     <meta name="keywords" content="Trees,navigation"/>
     <link href="media/css/main.min.css" rel="stylesheet" type="text/css"/>
+    <script src="media/js/jquery-3.2.1.js"></script>
 
 </head>
 <body>
