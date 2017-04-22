@@ -24,31 +24,39 @@ class GenerateTree
 
     function show()
     {
-
-        //$res = $this->db->prepare("SELECT id, name, parent, display_order FROM Trees");
         $res = $this->db->prepare("SELECT id, name, parent, display_order FROM Trees order by parent");
         $res->execute();
 
         echo '<ul>';
+
         while ($row = $res->fetch()) {
-            echo 'Linie, id:<b>' . $row['id'] . '</b> name:<b>' . $row['name'] . '</b> parent:<b>' . $row['parent'] . '</b> display_order: <b>' . $row['display_order'] . '</b>';
 
-            if (!$this->check_used_value($row['parent'])) {
-                echo '</ul><ul>';
+            $res3 = $this->db->prepare("SELECT COUNT(id) FROM Trees WHERE parent = :id");
+            $res3->bindValue(':id', $row['id'], PDO::PARAM_INT);
+            $res3->execute();
+
+            if ($res3->fetchColumn() > 0) {
+                echo '<li>' . $row['name'];
+
+                $res2 = $this->db->prepare("SELECT id, name, parent, display_order FROM Trees WHERE parent = :id order by display_order");
+                $res2->bindValue(':id', $row['id'], PDO::PARAM_INT);
+                $res2->execute();
+
+                while ($row2 = $res2->fetch()) {
+                    if (!$this->check_used_value($row['parent'])) {
+                        echo '<ul>';
+                    }
+                    echo '<li>' . $row2['name'] . '</li>';
+                }
+                echo '</ul>';
+                echo '</li>';
+            } else {
+                echo '<li>' . $row['name'] . '</li>';
             }
 
-
-            if ($row['parent'] == $row['id']) {
-                echo 'z';
-            }
-
-
-            echo '<li>' . $row['name'] . '</li>';
 
 
         }
-
-
         echo '</ul>';
     }
 
