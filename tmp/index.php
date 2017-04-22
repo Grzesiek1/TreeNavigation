@@ -28,30 +28,9 @@ class GenerateTree
         $res->execute();
 
         echo '<ul>';
-
         while ($row = $res->fetch()) {
-
-            if ($this->check_have_parent($row['id'])) {
-                if (!$this->check_used_string($row['name'])) {
-                    echo '<li>' . $row['name'];
-                }
-
-                $res2 = $this->db->prepare("SELECT id, name, parent, display_order FROM Trees WHERE parent = :id order by display_order");
-                $res2->bindValue(':id', $row['id'], PDO::PARAM_INT);
-                $res2->execute();
-
-                while ($row2 = $res2->fetch()) {
-                    if (!$this->check_used_value($row['parent'])) {
-                        echo '<ul>';
-                    }
-
-                    if (!$this->check_used_string($row2['name'])) {
-                        echo '<li>' . $row2['name'] . '</li>';
-                    }
-
-                }
-                echo '</ul>';
-                echo '</li>';
+            if ($this->check_have_child($row['id'])) {
+                $this->generate_child($row['id'], $row['name']);
             } else {
                 if (!$this->check_used_string($row['name'])) {
                     echo '<li>' . $row['name'] . '</li>';
@@ -61,7 +40,32 @@ class GenerateTree
         echo '</ul>';
     }
 
-    function check_have_parent($id)
+    function generate_child($id, $parent_name)
+    {
+
+        if (!$this->check_used_string($parent_name)) {
+            echo '<li>' . $parent_name;
+        }
+
+        $res = $this->db->prepare("SELECT id, name, parent, display_order FROM Trees WHERE parent = :id order by display_order");
+        $res->bindValue(':id', $id, PDO::PARAM_INT);
+        $res->execute();
+
+        while ($row = $res->fetch()) {
+            if (!$this->check_used_value($row['parent'])) {
+                echo '<ul>';
+            }
+
+            if (!$this->check_used_string($row['name'])) {
+                echo '<li>' . $row['name'] . '</li>';
+            }
+        }
+        echo '</ul>';
+        echo '</li>';
+    }
+
+
+    function check_have_child($id)
     {
         $res = $this->db->prepare("SELECT COUNT(id) FROM Trees WHERE parent = :id");
         $res->bindValue(':id', $id, PDO::PARAM_INT);
@@ -69,7 +73,7 @@ class GenerateTree
 
         if ($res->fetchColumn() > 0) {
             return true;
-        }else{
+        } else {
             return false;
         }
     }
