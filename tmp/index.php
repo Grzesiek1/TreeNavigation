@@ -31,11 +31,7 @@ class GenerateTree
 
         while ($row = $res->fetch()) {
 
-            $res3 = $this->db->prepare("SELECT COUNT(id) FROM Trees WHERE parent = :id");
-            $res3->bindValue(':id', $row['id'], PDO::PARAM_INT);
-            $res3->execute();
-
-            if ($res3->fetchColumn() > 0) {
+            if ($this->check_have_parent($row['id'])) {
                 if (!$this->check_used_string($row['name'])) {
                     echo '<li>' . $row['name'];
                 }
@@ -61,12 +57,22 @@ class GenerateTree
                     echo '<li>' . $row['name'] . '</li>';
                 }
             }
-
-
         }
         echo '</ul>';
     }
 
+    function check_have_parent($id)
+    {
+        $res = $this->db->prepare("SELECT COUNT(id) FROM Trees WHERE parent = :id");
+        $res->bindValue(':id', $id, PDO::PARAM_INT);
+        $res->execute();
+
+        if ($res->fetchColumn() > 0) {
+            return true;
+        }else{
+            return false;
+        }
+    }
 
     function check_used_string($value)
     {
@@ -87,7 +93,6 @@ class GenerateTree
         }
 
     }
-
 
     function check_used_value($value)
     {
