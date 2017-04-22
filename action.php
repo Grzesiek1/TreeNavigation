@@ -8,6 +8,10 @@
 require_once('head.php');
 $object = new Trees($db);
 
-if(isset($_GET['added'])){
-    $object->add($_POST['name']);
+if (isset($_GET['id'])) {
+
+    if ($_GET['id'] == 'add') {
+        $object->add($_POST['name']);
+    }
+
 }

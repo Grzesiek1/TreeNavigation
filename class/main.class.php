@@ -15,13 +15,29 @@ class Trees
         $this->db = $db;
     }
 
+    /*
+     * Replace index from $arg[x][y] to $arg[y][x]
+    */
+    function array_change_xy($array)
+    {
+        $x = 0;
+        foreach ($array as $item) {
+            foreach ($item as $key => $value) {
+                $new_array[$key][$x] = $value;
+            }
+            $x++;
+        }
+        if (isset($new_array))
+            return $new_array;
+    }
+
     function add(String $name, Int $parent = 0)
     {
         // Counts the number of elements in a branch
         $res = $this->db->prepare("SELECT COUNT(id) FROM Trees WHERE parent = :parent");
         $res->bindValue(':parent', $parent, PDO::PARAM_STR);
         $res->execute();
-        $position_new_element = $res->fetchColumn()+1;
+        $position_new_element = $res->fetchColumn() + 1;
 
 
         //Adds a new tree element
@@ -32,6 +48,13 @@ class Trees
         $res->execute();
 
         header('Location: ' . $_SERVER['HTTP_REFERER']);
+    }
+
+    function get()
+    {
+        $res = $this->db->prepare("SELECT id, name, parent, display_order FROM Trees");
+        $res->execute();
+        return $this->array_change_xy($res->fetchAll());
     }
 
 

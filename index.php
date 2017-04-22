@@ -8,7 +8,14 @@
 require_once('head.php');
 
 $smarty->display('head.tpl');
-
-$smarty->display('index.tpl');
+if (isset($_GET['action'])) {
+    if ($_GET['action'] == 'show') {
+        $smarty->display('show.tpl');
+    } elseif ($_GET['action'] == 'add') {
+        $smarty->display('add.tpl');
+    }
+} else {
+    $smarty->display('index.tpl');
+}
 
 $smarty->display('footer.tpl');
