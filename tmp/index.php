@@ -57,7 +57,16 @@ class GenerateTree
             }
 
             if (!$this->check_used_string($row['name'])) {
-                echo '<li>' . $row['name'] . '</li>';
+
+                if ($this->check_have_child($row['id'])) {
+                    echo '<li>' . $row['name'] . '</li>';
+                    $this->generate_child($row['id'], $row['name']);
+                } else {
+                    if (!$this->check_used_string($row['name'])) {
+                        echo '<li>' . $row['name'] . '</li>';
+                    }
+                    echo '<li>' . $row['name'] . '</li>';
+                }
             }
         }
         echo '</ul>';
