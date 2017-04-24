@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Czas generowania: 22 Kwi 2017, 16:38
+-- Czas generowania: 24 Kwi 2017, 02:37
 -- Wersja serwera: 10.1.13-MariaDB
 -- Wersja PHP: 7.0.8
 
@@ -23,12 +23,12 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Struktura tabeli dla tabeli `trees`
+-- Struktura tabeli dla tabeli `tree`
 --
 
 CREATE TABLE `tree` (
   `id` int(11) NOT NULL,
-  `name` text COLLATE utf8_polish_ci NOT NULL,
+  `name` varchar(255) COLLATE utf8_polish_ci NOT NULL,
   `parent` int(11) DEFAULT NULL,
   `display_order` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
@@ -71,7 +71,8 @@ INSERT INTO `tree` (`id`, `name`, `parent`, `display_order`) VALUES
 -- Indexes for table `tree`
 --
 ALTER TABLE `tree`
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `name` (`name`);
 
 --
 -- AUTO_INCREMENT for dumped tables

@@ -11,15 +11,25 @@ $object = new Main($db);
 if (isset($_GET['id'])) {
 
     if ($_GET['id'] == 'add') {
-        $object->add($_POST['add_name']);
+        echo $object->add($_POST['add_name'], $_POST['parent_id']);
     }
 
     if ($_GET['id'] == 'remove') {
-       echo $object->remove($_POST['id']);
+        echo $object->remove($_POST['id']);
     }
 
     if ($_GET['id'] == 'rename') {
-       echo $object->rename($_POST['id'], $_POST['new_name']);
+        echo $object->rename($_POST['id'], $_POST['new_name']);
     }
+
+    if ($_GET['id'] == 'move_to') {
+        echo $object->move_to($_POST['id'], $_POST['new_parent_id']);
+    }
+
+    if ($_GET['id'] == 'move_left') {
+        echo $object->move_left($_POST['id']);
+    }
+
+
 
 }

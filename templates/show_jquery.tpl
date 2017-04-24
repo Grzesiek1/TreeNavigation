@@ -17,14 +17,14 @@
                         <b>Selected element:</b> <span id="selected_h" class="selected"></span>
                         <input type="hidden" class="selected_id" name="id"/>
                         <br>
-                        <button onclick="left();" type="button">Left</button>
-                        <button onclick="up();" type="button">Up</button>
-                        <button onclick="down();" type="button">Down</button>
+                        <button onclick="move_left();" type="button">Left</button>
+                        <button onclick="move_up();" type="button">Up</button>
+                        <button onclick="move_down();" type="button">Down</button>
                         <button onclick="remove();" type="button">Remove</button>
 
                         <br><br>
-                        <b>Move to (New parent "name"):</b> <br>
-                        <input id="move_to"/>
+                        <b>Move to (Enter parent "id"):</b> <br>
+                        <input name="new_parent_id"/>
                         <button onclick="move_to();" type="button">Move</button>
 
                         <br><br>
@@ -32,22 +32,19 @@
                         <input class="selected" name="new_name"/>
                         <button onclick="rename();" type="button">Rename</button>
 
-                        <div><b>Add new element (Enter a unique "name") <br>
-                                (optional enter "where add - [name parent]")</b></div>
+                        <div><b>Add new element (Enter a unique "name")</b><br>
+                        <span style="font-size:10px;">(First click the place where you want to add)</span></div>
 
                         <table>
                             <tr>
                                 <td>Name:</td>
-                                <td><input placeholder="New element name" type="text" name="new_name"/></td>
-                            </tr>
-                            <tr>
-                                <td>Where:</td>
-                                <td><input placeholder="Element add to (optional)" type="text" name="parent_name"/>
-                                </td>
+                                <td><input placeholder="New element name" type="text" name="add_name"/></td>
+                                <td><input type="checkbox" name="root"/></td>
+                                <td>Add to main branch</td>
                             </tr>
                             <tr>
                                 <td colspan="2">
-                                    <button type="button">Add element</button>
+                                    <button onclick="add();" type="button">Add element</button>
                                 </td>
                             </tr>
                         </table>

@@ -96,3 +96,51 @@ function remove() {
             message(response);
         });
 }
+
+function add() {
+    var id = $("input[name='id']").val();
+    var add_name = $("input[name='add_name']").val();
+    var history = document.getElementById("history");
+
+    if ($("input[name='root']").is(':checked')) {
+        id = 0;
+    }
+
+    $.post("action.php?id=add",
+        {
+            parent_id: id,
+            add_name: add_name,
+
+        },
+        function (response, status) {
+            message(response);
+        });
+}
+
+function move_to() {
+    var id = $("input[name='id']").val();
+    var history = document.getElementById("history");
+    var new_parent_id = $("input[name='new_parent_id']").val();
+
+    $.post("action.php?id=move_to",
+        {
+            id: id,
+            new_parent_id: new_parent_id
+        },
+        function (response, status) {
+            message(response);
+        });
+}
+
+function move_left() {
+    var id = $("input[name='id']").val();
+    var history = document.getElementById("history");
+
+    $.post("action.php?id=move_left",
+        {
+            id: id
+        },
+        function (response, status) {
+            message(response);
+        });
+}

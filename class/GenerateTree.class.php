@@ -24,7 +24,7 @@ class GenerateTree
     {
         $this->json = $json;
 
-        $res = $this->db->prepare("SELECT id, name, parent, display_order FROM tree order by parent");
+        $res = $this->db->prepare("SELECT id, name, parent, display_order FROM tree order by parent ASC, display_order");
         $res->execute();
 
         if ($this->json == true) {// json return data
