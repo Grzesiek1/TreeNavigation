@@ -6,6 +6,8 @@
  * Time: 00:23
  */
 error_reporting(E_ALL);
+session_start();
+ob_start();
 
 require_once('config.php');
 

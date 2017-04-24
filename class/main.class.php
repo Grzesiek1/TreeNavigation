@@ -50,8 +50,6 @@ class Main
                 return 'Error. Can not add.';
             }
         }
-
-
         return 'Add new element, name:' . $name;
     }
 
@@ -66,6 +64,7 @@ class Main
         }
 
         $this->remove_lost_items();
+        $this->rebuild_index_display();
 
         return 'Remove element id:' . $id;
     }
@@ -85,6 +84,8 @@ class Main
         //View items
         $parent = 0;
         $x = 1;
+        $query = 'INSERT INTO tree (id,parent,display_order) VALUES';
+
         foreach ($array['id'] as $value => $key) {
             if ($parent != $array['parent'][$value]) {
                 $parent = $array['parent'][$value];
@@ -94,16 +95,21 @@ class Main
             $array_new['parent'][$value] = $array['parent'][$value];
             $array_new['display_order'][$value] = $x;
 
-            //set new value in database table
-            $result = $this->db->prepare("UPDATE `tree` SET `display_order` = :display_order WHERE id = :id AND parent = :parent");
-            $result->bindValue(':id', $array_new['id'][$value], PDO::PARAM_INT);
-            $result->bindValue(':parent', $array_new['parent'][$value], PDO::PARAM_STR);
-            $result->bindValue(':display_order', $array_new['display_order'][$value], PDO::PARAM_STR);
-            $result->execute();
+            //did not use prepare PDO. Check whether it is int!
+            $query .= " (" . (int)$array_new['id'][$value] . ", " . (int)$array_new['parent'][$value] . ", " . (int)$array_new['display_order'][$value] . "),";
 
             $x++;
         }
+        $query = rtrim($query, ",");
+        $query .= ' ON DUPLICATE KEY UPDATE display_order = VALUES(display_order);';
 
+        //set new values in database table
+        try {
+            $res = $this->db->query($query);
+            $res->execute();
+        } catch (Exception $e) {
+            return 'Error query in rebuild_index_display()';
+        }
         return true;
     }
 
@@ -135,7 +141,7 @@ class Main
         return 'The tree was cleared';
     }
 
-    function rename($id, $name)
+    function rename(int $id, string $name)
     {
         try {
             $result = $this->db->prepare("UPDATE `tree` SET `name` = :name WHERE `tree`.`id` = :id");
@@ -150,26 +156,38 @@ class Main
             }
 
         }
-
+        $_SESSION['id_operation'] = $id;
         return 'Set new name:' . $name . ' for element id:' . $id;
     }
 
-    function move_to($id, $parent_id)
+    function move_to(int $id, int $parent_id)
     {
-        try {
-            $result = $this->db->prepare("UPDATE `tree` SET `parent` = :parent_id WHERE `tree`.`id` = :id");
-            $result->bindValue(':id', $id, PDO::PARAM_INT);
-            $result->bindValue(':parent_id', $parent_id, PDO::PARAM_STR);
-            $result->execute();
-        } catch (Exception $e) {
-            return 'Error. Can not move element to:' . $parent_id;
+        //check exist parent
+        $res = $this->db->prepare("SELECT COUNT(id) FROM tree WHERE id = :parent");
+        $res->bindValue(':parent', $parent_id, PDO::PARAM_INT);
+        $res->execute();
+
+        //check exist parent
+        if ($res->fetchColumn() > 0) {
+
+            try {
+                $result = $this->db->prepare("UPDATE `tree` SET `parent` = :parent_id WHERE `tree`.`id` = :id");
+                $result->bindValue(':id', $id, PDO::PARAM_INT);
+                $result->bindValue(':parent_id', $parent_id, PDO::PARAM_STR);
+                $result->execute();
+            } catch (Exception $e) {
+                return 'Error. Can not move element to:' . $parent_id;
+            }
+        } else {
+            return 'Can not move element. Invidial parent:' . $parent_id;
         }
 
         $this->rebuild_index_display();
+        $_SESSION['id_operation'] = $id;
         return 'Element id:' . $id . ' move to:' . $parent_id;
     }
 
-    function move_left($id)
+    function move_left(int $id)
     {
         try {
             try {
@@ -190,12 +208,12 @@ class Main
         }
 
         $this->rebuild_index_display();
-
+        $_SESSION['id_operation'] = $id;
         return 'Element id:' . $id . ' move left.';
     }
 
     // second parameter only used $this->move_up himself
-    function move_up($id, $position_base_element = 0, $parent = 0)
+    function move_up(int $id, int $position_base_element = 0, int $parent = 0)
     {
         try {
             //check current position element
@@ -203,14 +221,12 @@ class Main
             $res->bindValue(':id', $id, PDO::PARAM_INT);
             $res->execute();
 
-
             if ($position_base_element == 0) {
                 while ($row = $res->fetch()) {
                     $position_base_element = $row['display_order'];
                     $parent = $row['parent'];
                 }
             }
-
 
             //check exist higher element
             if ($position_base_element > 0) {
@@ -247,13 +263,64 @@ class Main
         } catch (Exception $e) {
             return 'Read error. Can not move up.' . $e;
         }
-
+        $_SESSION['id_operation'] = $id;
         return 'Element place is:' . $res->fetchColumn() . ' move up.';
     }
 
-    function down()
+    function move_down(int $id)
+    {
+        //check current position element
+        $res = $this->db->prepare("SELECT display_order, parent FROM `tree` WHERE id = :id");
+        $res->bindValue(':id', $id, PDO::PARAM_INT);
+        $res->execute();
+
+        while ($row = $res->fetch()) {
+            $current_position = $row['display_order'];
+            $parent = $row['parent'];
+        }
+
+        //check exist upper element
+        $upper_position = $current_position + 1;
+        $result = $this->db->prepare("SELECT id FROM `tree` WHERE display_order = :display_order AND parent = :parent");
+        $result->bindValue(':display_order', $upper_position, PDO::PARAM_INT);
+        $result->bindValue(':parent', $parent, PDO::PARAM_INT);
+        $result->execute();
+
+        $upper_id = $result->fetchColumn();
+        //check exist upper element
+        if ($upper_id > 0) {
+            $set = $this->db->prepare("UPDATE `tree` SET display_order = :display_order WHERE id = :id AND parent = :parent");
+            $set->bindValue(':display_order', $current_position, PDO::PARAM_INT);
+            $set->bindValue(':id', $upper_id, PDO::PARAM_INT);
+            $set->bindValue(':parent', $parent, PDO::PARAM_INT);
+            $set->execute();
+
+            $set = $this->db->prepare("UPDATE `tree` SET display_order = :display_order WHERE id = :id AND parent = :parent");
+            $set->bindValue(':id', $id, PDO::PARAM_INT);
+            $set->bindValue(':display_order', $upper_position, PDO::PARAM_INT);
+            $set->bindValue(':parent', $parent, PDO::PARAM_INT);
+            $set->execute();
+
+            $_SESSION['id_operation'] = $id;
+            return 'Move down element.';
+        } else {
+            return 'Can not move element';
+        }
+
+
+    }
+
+    function move_right(int $id)
+    {
+        $_SESSION['id_operation'] = $id;
+        return 'Move to right';
+    }
+
+    //return number occurrence on list frontend
+    function number_occurrence($id_element)
     {
 
     }
+
 
 }

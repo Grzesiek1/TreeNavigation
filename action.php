@@ -15,27 +15,38 @@ if (isset($_GET['id'])) {
     }
 
     if ($_GET['id'] == 'remove') {
-        echo $object->remove($_POST['id']);
+        if (!empty($_POST['id']))
+            echo $object->remove($_POST['id']);
     }
 
     if ($_GET['id'] == 'rename') {
-        echo $object->rename($_POST['id'], $_POST['new_name']);
+        if (!empty($_POST['id']))
+            echo $object->rename($_POST['id'], $_POST['new_name']);
     }
 
     if ($_GET['id'] == 'move_to') {
-        echo $object->move_to($_POST['id'], $_POST['new_parent_id']);
+        if (!empty($_POST['id']) && is_numeric($_POST['new_parent_id']))
+            echo $object->move_to($_POST['id'], $_POST['new_parent_id']);
     }
 
     if ($_GET['id'] == 'move_left') {
-        echo $object->move_left($_POST['id']);
+        if (!empty($_POST['id']))
+            echo $object->move_left($_POST['id']);
     }
 
     if ($_GET['id'] == 'move_up') {
-        echo $object->move_up($_POST['id']);
+        if (!empty($_POST['id']))
+            echo $object->move_up($_POST['id']);
     }
 
     if ($_GET['id'] == 'move_down') {
-        echo $object->move_up($_POST['id']);
+        if (!empty($_POST['id']))
+            echo $object->move_down($_POST['id']);
+    }
+
+    if ($_GET['id'] == 'move_right') {
+        if (!empty($_POST['id']))
+            echo $object->move_right($_POST['id']);
     }
 
 }

@@ -1,5 +1,3 @@
-<script type="text/javascript" src="media/js/tree.js"></script>
-
 <div class="container">
     <div class="row">
         <div class="a col-lg-12 col-lg-offset-0">
@@ -20,11 +18,12 @@
                         <button onclick="move_left();" type="button">Left</button>
                         <button onclick="move_up();" type="button">Up</button>
                         <button onclick="move_down();" type="button">Down</button>
+                        <button onclick="move_right();" type="button">Right</button>
                         <button onclick="remove();" type="button">Remove</button>
 
                         <br><br>
                         <b>Move to (Enter parent "id"):</b> <br>
-                        <input name="new_parent_id"/>
+                        <input type="number" name="new_parent_id"/>
                         <button onclick="move_to();" type="button">Move</button>
 
                         <br><br>
@@ -59,7 +58,7 @@
                         <br>
                         <hr>
 
-                        <h3>Operation history:</h3>
+                        <h3>Operation history: <button onclick="clear_history();" type="button">Clear history</button></h3>
                         <textarea id="history" readonly></textarea>
                     </div>
                 </div>

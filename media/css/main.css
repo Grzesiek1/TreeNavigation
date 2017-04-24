@@ -70,3 +70,8 @@ th {
 .container {
     margin-bottom: 10px;
 }
+
+h3 button {
+    font-size: 14px;
+    height: 30px;
+}
