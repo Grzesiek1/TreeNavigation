@@ -3,9 +3,9 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-    <title>TreesNavigation</title>
-    <meta name="description" content="Trees navigation - example project"/>
-    <meta name="keywords" content="Trees,navigation"/>
+    <title>TreeNavigation</title>
+    <meta name="description" content="Tree navigation - example project"/>
+    <meta name="keywords" content="Tree,navigation"/>
 
     <script type="text/javascript" src="ExternalFiles/media/js/jquery-3.2.1.js"></script>
     <script type="text/javascript" src="ExternalFiles/media/js/bootstrap-treeview.js"></script>

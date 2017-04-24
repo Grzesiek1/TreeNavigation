@@ -8,5 +8,5 @@
 $dbc['host'] = "localhost";
 $dbc['user'] = "root";
 $dbc['pass'] = "";
-$dbc['name'] = "TreesNavigation";
+$dbc['name'] = "TreeNavigation";
 $dbc['encode'] = "SET NAMES utf8";

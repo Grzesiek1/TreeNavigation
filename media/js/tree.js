@@ -144,3 +144,29 @@ function move_left() {
             message(response);
         });
 }
+
+function move_up() {
+    var id = $("input[name='id']").val();
+    var history = document.getElementById("history");
+
+    $.post("action.php?id=move_up",
+        {
+            id: id
+        },
+        function (response, status) {
+            message(response);
+        });
+}
+
+function move_down() {
+    var id = $("input[name='id']").val();
+    var history = document.getElementById("history");
+
+    $.post("action.php?id=move_down",
+        {
+            id: id
+        },
+        function (response, status) {
+            message(response);
+        });
+}

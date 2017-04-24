@@ -61,15 +61,12 @@ th {
     border: 1px solid rgba(0, 0, 0, 0.3);
 }
 
-.a {
-
-}
-
 .list-group-item {
     height: 25px;
     padding-top: 2px;
     padding-bottom: 0px;
 }
-.container{
+
+.container {
     margin-bottom: 10px;
 }

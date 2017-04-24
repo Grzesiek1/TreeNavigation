@@ -30,6 +30,12 @@ if (isset($_GET['id'])) {
         echo $object->move_left($_POST['id']);
     }
 
+    if ($_GET['id'] == 'move_up') {
+        echo $object->move_up($_POST['id']);
+    }
 
+    if ($_GET['id'] == 'move_down') {
+        echo $object->move_up($_POST['id']);
+    }
 
 }
