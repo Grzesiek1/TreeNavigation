@@ -170,3 +170,10 @@ function move_down() {
             message(response);
         });
 }
+
+document.addEventListener("keydown", function(event) {
+    //key left
+    if(event.which == '37'){
+        move_left();
+    }
+});

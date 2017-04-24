@@ -70,8 +70,10 @@ class Main
         return 'Remove element id:' . $id;
     }
 
-    private function rebuild_index_display(){
-        $res = $this->db->prepare("SELECT id, parent, display_order FROM tree");
+    private function rebuild_index_display()
+    {
+
+        $res = $this->db->prepare("SELECT id, parent, display_order FROM tree ORDER BY parent ASC, display_order");
         $res->execute();
         //Get all element tree
         while ($row = $res->fetch()) {
@@ -79,6 +81,30 @@ class Main
             $array['parent'][] = $row['parent'];
             $array['display_order'][] = $row['display_order'];
         }
+
+        //View items
+        $parent = 0;
+        $x = 1;
+        foreach ($array['id'] as $value => $key) {
+            if ($parent != $array['parent'][$value]) {
+                $parent = $array['parent'][$value];
+                $x = 1;
+            }
+            $array_new['id'][$value] = $array['id'][$value];
+            $array_new['parent'][$value] = $array['parent'][$value];
+            $array_new['display_order'][$value] = $x;
+
+            //set new value in database table
+            $result = $this->db->prepare("UPDATE `tree` SET `display_order` = :display_order WHERE id = :id AND parent = :parent");
+            $result->bindValue(':id', $array_new['id'][$value], PDO::PARAM_INT);
+            $result->bindValue(':parent', $array_new['parent'][$value], PDO::PARAM_STR);
+            $result->bindValue(':display_order', $array_new['display_order'][$value], PDO::PARAM_STR);
+            $result->execute();
+
+            $x++;
+        }
+
+        return true;
     }
 
     private function remove_lost_items()
@@ -139,6 +165,7 @@ class Main
             return 'Error. Can not move element to:' . $parent_id;
         }
 
+        $this->rebuild_index_display();
         return 'Element id:' . $id . ' move to:' . $parent_id;
     }
 
@@ -161,6 +188,8 @@ class Main
         } catch (Exception $e) {
             return 'Error writing. Can not move left.';
         }
+
+        $this->rebuild_index_display();
 
         return 'Element id:' . $id . ' move left.';
     }
