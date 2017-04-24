@@ -14,9 +14,7 @@ if (isset($_GET['action'])) {
     $object = new Main($db);
 
     if ($_GET['action'] == 'show_jquery') {
-        $object = new GenerateTree($db);
-
-        $smarty->assign('json_data', $object->generate_tree(true));
+        
         $smarty->display('show_jquery.tpl');
 
     } elseif ($_GET['action'] == 'show_html') {

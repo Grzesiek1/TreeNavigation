@@ -26,7 +26,7 @@ SET time_zone = "+00:00";
 -- Struktura tabeli dla tabeli `trees`
 --
 
-CREATE TABLE `trees` (
+CREATE TABLE `tree` (
   `id` int(11) NOT NULL,
   `name` text COLLATE utf8_polish_ci NOT NULL,
   `parent` int(11) DEFAULT NULL,
@@ -34,10 +34,10 @@ CREATE TABLE `trees` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
 
 --
--- Zrzut danych tabeli `trees`
+-- Zrzut danych tabeli `tree`
 --
 
-INSERT INTO `trees` (`id`, `name`, `parent`, `display_order`) VALUES
+INSERT INTO `tree` (`id`, `name`, `parent`, `display_order`) VALUES
 (1, 'a', 0, 1),
 (2, 'b', 0, 2),
 (3, 'c', 0, 3),
@@ -68,9 +68,9 @@ INSERT INTO `trees` (`id`, `name`, `parent`, `display_order`) VALUES
 --
 
 --
--- Indexes for table `trees`
+-- Indexes for table `tree`
 --
-ALTER TABLE `trees`
+ALTER TABLE `tree`
   ADD PRIMARY KEY (`id`);
 
 --
@@ -78,9 +78,9 @@ ALTER TABLE `trees`
 --
 
 --
--- AUTO_INCREMENT dla tabeli `trees`
+-- AUTO_INCREMENT dla tabeli `tree`
 --
-ALTER TABLE `trees`
+ALTER TABLE `tree`
   MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;

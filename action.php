@@ -11,7 +11,15 @@ $object = new Main($db);
 if (isset($_GET['id'])) {
 
     if ($_GET['id'] == 'add') {
-        $object->add($_POST['name']);
+        $object->add($_POST['add_name']);
+    }
+
+    if ($_GET['id'] == 'remove') {
+       echo $object->remove($_POST['id']);
+    }
+
+    if ($_GET['id'] == 'rename') {
+       echo $object->rename($_POST['id'], $_POST['new_name']);
     }
 
 }
