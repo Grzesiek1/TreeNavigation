@@ -353,7 +353,8 @@ class ActionTree
 
         } else {
             $move_more++;
-            $this->move_right($id, $move_more);
+         //   $this->move_right($id, $move_more);
+            $this->session_refresh($id);
             return "Can not move element \n";
         }
 
@@ -373,6 +374,20 @@ class ActionTree
         // check mutual kinship
         if ($result->fetchColumn() == 0) {
 
+
+
+            $list = $this->get_all_parents_this_element($to);
+            //print_r($list);
+            if (in_array($id, $list) == 0) {
+                echo 'allow enter';
+            } elseif (in_array($id, $list) == 1) {
+                echo 'not allow enter';
+
+            }
+            return true;
+
+
+
             $sub_branch = $this->put_in_deep((int)$to);
 
 
@@ -391,6 +406,26 @@ class ActionTree
             return true;
         }
 
+    }
+
+
+    public $list = array();
+    function get_all_parents_this_element(int $id)
+    {
+
+        $result = $this->db->prepare("SELECT parent FROM `tree` WHERE id = :id ");
+        $result->bindValue(':id', $id, PDO::PARAM_INT);
+        $result->execute();
+
+        $parent = $result->fetchColumn();
+
+        array_push($this->list, $parent);
+
+        if ($parent > 0) {
+            $this->get_all_parents_this_element((int)$parent);
+        }
+
+        return $this->list;
     }
 
     function put_in_deep(int $id)
