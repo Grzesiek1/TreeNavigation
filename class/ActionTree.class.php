@@ -328,6 +328,7 @@ class ActionTree
     */
     function move_right(int $id, int $move_more = 0)
     {
+        $this->list = array_fill(0, 0, 0);
         $object = new GenerateTreeArrays($this->db);
         $array = $object->generate_tree(true);
 
@@ -353,7 +354,7 @@ class ActionTree
 
         } else {
             $move_more++;
-         //   $this->move_right($id, $move_more);
+            $this->move_right($id, $move_more);
             $this->session_refresh($id);
             return "Can not move element \n";
         }
@@ -380,8 +381,12 @@ class ActionTree
             //print_r($list);
             if (in_array($id, $list) == 0) {
                 echo 'allow enter';
+                return false;
+
             } elseif (in_array($id, $list) == 1) {
                 echo 'not allow enter';
+                echo "block1\n";
+                return true;
 
             }
             return true;
@@ -393,7 +398,7 @@ class ActionTree
 
             if ($sub_branch == 0) {
                 return false;
-                unset($memory);
+
             } else {
                 //  $this->check_is_conflict((int)$id, (int)$sub_branch);
                 echo "block1\n";
