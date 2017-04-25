@@ -211,7 +211,6 @@ class ActionTree
                 }
 
 
-
             }
 
         } catch (Exception $e) {
@@ -327,50 +326,93 @@ class ActionTree
     /*
     * Method for moving tree elements
     */
-    function move_right(int $id, int $how_add = 0)
+    function move_right(int $id, int $move_more = 0)
     {
         $object = new GenerateTreeArrays($this->db);
         $array = $object->generate_tree(true);
 
         foreach ($array['id'] as $value => $key) {
             if ($array['id'][$value] == $id) {
-                if($how_add > 0){
-                    $id_right = $array['id'][$value + $how_add];
-                }else{
-                    $id_right = $array['id'][$value + 1];
+                if ($move_more > 0) {
+                    $id_right = (int)$array['id'][$value + $move_more];
+                } else {
+                    $id_right = (int)$array['id'][$value + 1];
                 }
 
             }
         }
 
-        // check! you can not become your parent
-        if ($id_right > 0 && $id != $id_right) {
+        if ($this->check_is_conflict($id, $id_right) == false) {
+            $set = $this->db->prepare("UPDATE `tree` SET parent = :parent WHERE id = :id");
+            $set->bindValue(':id', $id, PDO::PARAM_INT);
+            $set->bindValue(':parent', $id_right, PDO::PARAM_INT);
+            $set->execute();
 
-            // check whether already you where his parent (if he is your parent. you can not be him)
-            $result = $this->db->prepare("SELECT COUNT(id) FROM `tree` WHERE id = :id AND parent = :parent");
-            $result->bindValue(':id', $id_right, PDO::PARAM_INT);
-            $result->bindValue(':parent', $id, PDO::PARAM_INT);
-            $result->execute();
+            $this->rebuild_index_display();
+            $this->session_refresh($id);
+            return 'Move element to right';
 
-            // check whether already you where his parent (if he is your parent. you can not be him)
-            if ($result->fetchColumn() == 0) {
-                $set = $this->db->prepare("UPDATE `tree` SET parent = :parent WHERE id = :id");
-                $set->bindValue(':id', $id, PDO::PARAM_INT);
-                $set->bindValue(':parent', $id_right, PDO::PARAM_INT);
-                $set->execute();
-            } else {
-                $how_add++;
-                $this->move_right($id, $how_add);
-                echo 'test<br>';
-            }
+        } else {
+            $move_more++;
+            $this->move_right($id, $move_more);
+            return "Can not move element \n";
         }
 
 
-        $this->rebuild_index_display();
-        $this->session_refresh($id);
-        return 'Move to right element';
     }
-    
+
+    public $memory = array();
+    function check_is_conflict(int $id, int $to)
+    {
+        array_push($this->memory, $to);
+        // check whether you is parent these parent
+        if ($id != $to) {
+
+            foreach($this->memory as $value => $key){
+                if($id == $this->memory[$value]){
+                    return true;
+                }
+            }
+
+            // check mutual kinship
+            $result = $this->db->prepare("SELECT COUNT(id) FROM `tree` WHERE id = :id AND parent = :parent");
+            $result->bindValue(':id', $to, PDO::PARAM_INT);
+            $result->bindValue(':parent', $id, PDO::PARAM_INT);
+            $result->execute();
+
+            // check mutual kinship
+            if ($result->fetchColumn() == 0) {
+
+                $sub_branch = $this->put_in_deep((int)$to);
+
+
+                if ($sub_branch == 0) {
+                    return false;
+                    unset($memory);
+                } else {
+                  //  $this->check_is_conflict((int)$id, (int)$sub_branch);
+                    return true;
+                }
+
+
+            } else {
+                return true;
+            }
+
+        } else {
+            return true;
+        }
+    }
+
+    function put_in_deep(int $id)
+    {
+        $result = $this->db->prepare("SELECT parent FROM `tree` WHERE id = :id ");
+        $result->bindValue(':id', $id, PDO::PARAM_INT);
+        $result->execute();
+
+        return $result->fetchColumn();
+    }
+
 
     /*
     * Determine the location of an item when using moving items using the keyboard.

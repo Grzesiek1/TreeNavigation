@@ -23,7 +23,7 @@
 
                         <br><br>
                         <b>You can use keys on keyboard</b> <br>
-                        <span style="font-size:10px;">(F2 rename, DELETE remove, Directional arrows to move element, ENTER to add element)</span>
+                        <span style="font-size:10px;">(<span class="red">F2</span> rename, <span class="red">DELETE</span> remove, <span class="red">Directional arrows</span> to move element, <span class="red">ENTER</span> to add element)</span>
 
 
                         <br><br>
