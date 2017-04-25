@@ -338,7 +338,6 @@ class ActionTree
                 } else {
                     $id_right = (int)$array['id'][$value + 1];
                 }
-
             }
         }
 
@@ -361,47 +360,37 @@ class ActionTree
 
     }
 
-    public $memory = array();
+
     function check_is_conflict(int $id, int $to)
     {
-        array_push($this->memory, $to);
-        // check whether you is parent these parent
-        if ($id != $to) {
+        
+        // check mutual kinship
+        $result = $this->db->prepare("SELECT COUNT(id) FROM `tree` WHERE id = :id AND parent = :parent");
+        $result->bindValue(':id', $to, PDO::PARAM_INT);
+        $result->bindValue(':parent', $id, PDO::PARAM_INT);
+        $result->execute();
 
-            foreach($this->memory as $value => $key){
-                if($id == $this->memory[$value]){
-                    return true;
-                }
-            }
+        // check mutual kinship
+        if ($result->fetchColumn() == 0) {
 
-            // check mutual kinship
-            $result = $this->db->prepare("SELECT COUNT(id) FROM `tree` WHERE id = :id AND parent = :parent");
-            $result->bindValue(':id', $to, PDO::PARAM_INT);
-            $result->bindValue(':parent', $id, PDO::PARAM_INT);
-            $result->execute();
-
-            // check mutual kinship
-            if ($result->fetchColumn() == 0) {
-
-                $sub_branch = $this->put_in_deep((int)$to);
+            $sub_branch = $this->put_in_deep((int)$to);
 
 
-                if ($sub_branch == 0) {
-                    return false;
-                    unset($memory);
-                } else {
-                  //  $this->check_is_conflict((int)$id, (int)$sub_branch);
-                    return true;
-                }
-
-
+            if ($sub_branch == 0) {
+                return false;
+                unset($memory);
             } else {
+                //  $this->check_is_conflict((int)$id, (int)$sub_branch);
+                echo "block1\n";
                 return true;
             }
 
+
         } else {
+            echo "block2\n";
             return true;
         }
+
     }
 
     function put_in_deep(int $id)
