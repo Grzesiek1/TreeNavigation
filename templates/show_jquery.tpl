@@ -15,16 +15,16 @@
                         <b>Selected element:</b> <span id="selected_h" class="selected"></span>
                         <input type="hidden" class="selected_id" name="id"/>
                         <br>
-                        <button onclick="move_left();" type="button">Left</button>
-                        <button onclick="move_up();" type="button">Up</button>
-                        <button onclick="move_down();" type="button">Down</button>
-                        <button onclick="move_right();" type="button">Right</button>
+                        <button onclick="move('left');" type="button">Left</button>
+                        <button onclick="move('up');" type="button">Up</button>
+                        <button onclick="move('down');" type="button">Down</button>
+                        <button onclick="move('right');" type="button">Right</button>
                         <button onclick="remove();" type="button">Remove</button>
 
                         <br><br>
-                        <b>Move to (Enter parent "id"):</b> <br>
-                        <input type="number" name="new_parent_id"/>
-                        <button onclick="move_to();" type="button">Move</button>
+                        <b>You can use keys on keyboard</b> <br>
+                        <span style="font-size:10px;">(F2 rename, DELETE remove, Directional arrows to move element, ENTER to add element)</span>
+
 
                         <br><br>
                         <b>Rename (Enter a new "name"):</b> <br>

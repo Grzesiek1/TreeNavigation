@@ -7,19 +7,19 @@
  */
 require_once('head.php');
 
-if (isset($_GET['json'])) {
-    if ($_GET['json'] == true) {
-
-        $object = new GenerateTree($db);
-        die($object->generate_tree(true));
-    }
-}
-
-
 if (isset($_GET['get_position'])) {
     if ($_GET['get_position'] == true) {
 
-        $object = new Main($db);
-        die($object->number_occurrence($_SESSION['id_operation']));
+        $object = new ActionTree($db);
+        echo $object->number_occurrence($_SESSION['id_operation']);
+        die;
+    }
+}
+
+if (isset($_GET['json'])) {
+    if ($_GET['json'] == true) {
+
+        $object = new GenerateTreeArrays($db);
+        die($object->generate_tree());
     }
 }

@@ -16,18 +16,31 @@ $dbc['options'] = array(
     PDO::MYSQL_ATTR_INIT_COMMAND => $dbc['encode'],
 );
 
-try{
+try {
     $db = new PDO($dbc['dns'], $dbc['user'], $dbc['pass'], $dbc['options']);
     $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
     die('Wystąpił błąd przy łączeniu z bazą danych.');
 }
-
 unset($dbc);
 
 require_once('ExternalFiles/libs/Smarty.class.php');
-require_once('class/Main.class.php');
-require_once('class/GenerateTree.class.php');
+
+function __autoload_class($class)
+{
+    try {
+        require_once('class/' . $class . '.class.php');
+    } catch (exception $e) {
+        try {
+            require_once('class/' . strtolower($class) . '.class.php');
+        } catch (exception $e) {
+            $class = mb_convert_case($class, MB_CASE_TITLE, 'UTF-8');
+            require_once('class/' . $class . '.class.php');
+        }
+    }
+}
+
+spl_autoload_register('__autoload_class');
 
 $smarty = new Smarty();
 

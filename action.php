@@ -6,12 +6,13 @@
  * Time: 01:27
  */
 require_once('head.php');
-$object = new Main($db);
+$object = new ActionTree($db);
 
 if (isset($_GET['id'])) {
 
     if ($_GET['id'] == 'add') {
-        echo $object->add($_POST['add_name'], $_POST['parent_id']);
+        if (!empty($_POST['add_name']))
+        echo $object->add($_POST['add_name'], (int)$_POST['parent_id']);
     }
 
     if ($_GET['id'] == 'remove') {
@@ -22,11 +23,6 @@ if (isset($_GET['id'])) {
     if ($_GET['id'] == 'rename') {
         if (!empty($_POST['id']))
             echo $object->rename($_POST['id'], $_POST['new_name']);
-    }
-
-    if ($_GET['id'] == 'move_to') {
-        if (!empty($_POST['id']) && is_numeric($_POST['new_parent_id']))
-            echo $object->move_to($_POST['id'], $_POST['new_parent_id']);
     }
 
     if ($_GET['id'] == 'move_left') {

@@ -11,14 +11,12 @@ $smarty->display('head.tpl');
 
 if (isset($_GET['action'])) {
 
-    $object = new Main($db);
-
     if ($_GET['action'] == 'show_jquery') {
         
         $smarty->display('show_jquery.tpl');
 
     } elseif ($_GET['action'] == 'show_html') {
-        $object = new GenerateTree($db);
+        $object = new GenerateTreeHtml($db);
 
         $smarty->assign('data', $object->generate_tree());
         $smarty->display('show_html.tpl');
@@ -27,5 +25,4 @@ if (isset($_GET['action'])) {
 } else {
     $smarty->display('index.tpl');
 }
-
 $smarty->display('footer.tpl');
