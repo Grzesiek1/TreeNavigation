@@ -121,21 +121,6 @@ function add() {
     });
 }
 
-
-function add_element() {
-    var id = $("input[name='id']").val();
-    var new_name_element = $("input[name='new_name_element']").val();
-
-
-    $.post("action.php?id=add_element", {
-        id: id,
-        new_name_element: new_name_element
-
-    }, function (response) {
-        message(response);
-    });
-}
-
 function move($move) {
     var id = $("input[name='id']").val();
     ($move == 'left') ? $src = "action.php?id=move_left" : false;
@@ -161,22 +146,39 @@ document.addEventListener("keydown", function (event) {
     (event.which == '39') ? move('right') : false;
     //key delete
     (event.which == '46') ? remove() : false;
-    //key F2
-    (event.which == '113') ? rename() : false;
-    //key ENTER
-    (event.which == '13') ? add() : false;
-
 });
 
 function clear_history() {
     document.getElementById("history").innerHTML = '';
 }
 
-function delete_element($id){
 
-    $.post("action.php?id=delete_element", {
+/*
+`* Files operation
+ */
+
+function file_add() {
+    var id = $("input[name='id']").val();
+    var new_file = $("input[name='new_file']").val();
+
+
+    $.post("action.php?id=file_add", {
+        id: id,
+        new_file: new_file
+
+    }, function (response) {
+        message(response);
+    });
+}
+
+function file_remove($id){
+
+    $.post("action.php?id=file_remove", {
         id: $id
     }, function (response) {
         message(response);
     });
+}
+function file_selected($id){
+    alert($id);
 }

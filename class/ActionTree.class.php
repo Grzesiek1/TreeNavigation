@@ -69,6 +69,7 @@ class ActionTree
             return 'Error. Can not remove.';
         }
 
+        $this->session_refresh(0);
         $this->remove_lost_items();
         $this->rebuild_index_display();
 
@@ -189,7 +190,7 @@ class ActionTree
         $res->bindValue(':id', $id, PDO::PARAM_INT);
         $res->execute();
 
-        if($res->fetchColumn() == 0){
+        if ($res->fetchColumn() == 0) {
             return 'Can not move element in left. Element already is in main branch.';
         }
 

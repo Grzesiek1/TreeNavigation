@@ -115,3 +115,7 @@ h3 button {
 .list-group-item > .badge + .badge {
     margin-right: 2px;
 }
+
+.no_link{
+    color:#232323;
+}

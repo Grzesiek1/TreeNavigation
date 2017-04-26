@@ -7,13 +7,16 @@
  */
 require_once('head.php');
 $object = new ActionTree($db);
-$element = new ElementsGenerate($db);
+$files = new ActionFiles($db);
 
 if (isset($_GET['id'])) {
 
+    /*
+     * Folder operation
+     */
     if ($_GET['id'] == 'add') {
         if (!empty($_POST['add_name']))
-        echo $object->add($_POST['add_name'], (int)$_POST['parent_id']);
+            echo $object->add($_POST['add_name'], (int)$_POST['parent_id']);
     }
 
     if ($_GET['id'] == 'remove') {
@@ -47,14 +50,19 @@ if (isset($_GET['id'])) {
     }
 
 
-    if ($_GET['id'] == 'add_element') {
-        if (!empty($_POST['new_name_element']) && !empty($_POST['id'])){}
-            echo $element->add_element($_POST['new_name_element'], (int)$_POST['id']);
+    /*
+     * Files operation
+     */
+    if ($_GET['id'] == 'file_add') {
+        if (!empty($_POST['new_file']) && !empty($_POST['id'])) {
+        }
+        echo $files->file_add($_POST['new_file'], (int)$_POST['id']);
     }
     //
-    if ($_GET['id'] == 'delete_element') {
-        if (!empty($_POST['id'])){}
-        echo $element->delete_element((int)$_POST['id']);
+    if ($_GET['id'] == 'file_remove') {
+        if (!empty($_POST['id'])) {
+        }
+        echo $files->file_remove((int)$_POST['id']);
     }
 
 
