@@ -1,15 +1,15 @@
-<div class="container">
+
     <div class="row">
         <div class="a col-lg-12 col-lg-offset-0">
 
             <div class="row frame grid-divider">
 
-                <div class="a col-xs-6 col-lg-offset-0">
+                <div class="a col-sm-8 col-lg-offset-0">
                     <h3>Structure:</h3>
                     <div id="tree"></div>
                 </div>
 
-                <div id="navigation_tree" class="a col-xs-6 col-xs-offset-0">
+                <div id="navigation_tree" class="a col-xs-3 col-xs-offset-0">
                     <div class="col-padding">
                         <h3>Structure navigation:</h3>
                         <b>Selected element:</b> <span id="selected_h" class="selected"></span>
@@ -66,4 +66,3 @@
             </div>
         </div>
     </div>
-</div>

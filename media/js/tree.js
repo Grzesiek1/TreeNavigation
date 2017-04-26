@@ -10,6 +10,7 @@ $(function () {
         var $handle = $('#tree').treeview({
             levels: 99,
             data: response,
+            showTags: true,
             onNodeSelected: function (event, node) {
                 $('.selected').val(node.text);
                 $('.selected').text(node.text + ' (id:' + node.id + ')');
@@ -41,6 +42,7 @@ function refresh() {
         var $handle = $('#tree').treeview({
             levels: 99,
             data: response,
+            showTags: true,
             onNodeSelected: function (event, node) {
                 $('.selected').val(node.text);
                 $('.selected').text(node.text + ' (id:' + node.id + ')');
