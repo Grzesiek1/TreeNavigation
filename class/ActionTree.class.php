@@ -53,7 +53,7 @@ class ActionTree
                 return 'Error. Can not add.';
             }
         }
-        return 'Add new element, name:' . $name;
+        return 'Add new element, name: ' . $name;
     }
 
     /*
@@ -72,7 +72,7 @@ class ActionTree
         $this->remove_lost_items();
         $this->rebuild_index_display();
 
-        return 'Remove element id:' . $id;
+        return 'Element removed, id: ' . $id;
     }
 
     /*
@@ -81,7 +81,6 @@ class ActionTree
      */
     private function rebuild_index_display()
     {
-
         $res = $this->db->prepare("SELECT id, parent, display_order FROM tree ORDER BY parent ASC, display_order");
         $res->execute();
         // get all element tree
@@ -91,38 +90,39 @@ class ActionTree
             $array['display_order'][] = $row['display_order'];
         }
 
-        // view items
         $parent = 0;
         $x = 1;
         $query = 'INSERT INTO tree (id,parent,display_order) VALUES';
 
         // move to the new array in the correct order
-        foreach ($array['id'] as $value => $key) {
-            if ($parent != $array['parent'][$value]) {
-                $parent = $array['parent'][$value];
-                $x = 1;
+        if (isset($array)) {
+            foreach ($array['id'] as $value => $key) {
+                if ($parent != $array['parent'][$value]) {
+                    $parent = $array['parent'][$value];
+                    $x = 1;
+                }
+                $array_new['id'][$value] = $array['id'][$value];
+                $array_new['parent'][$value] = $array['parent'][$value];
+                // assign a new display index
+                $array_new['display_order'][$value] = $x;
+
+                // did not use prepare PDO. Check whether it is int!
+                $query .= " (" . (int)$array_new['id'][$value] . ", " . (int)$array_new['parent'][$value] . ", " . (int)$array_new['display_order'][$value] . "),";
+
+                $x++;
             }
-            $array_new['id'][$value] = $array['id'][$value];
-            $array_new['parent'][$value] = $array['parent'][$value];
-            // assign a new display index
-            $array_new['display_order'][$value] = $x;
+            $query = rtrim($query, ",");
+            $query .= ' ON DUPLICATE KEY UPDATE display_order = VALUES(display_order);';
 
-            // did not use prepare PDO. Check whether it is int!
-            $query .= " (" . (int)$array_new['id'][$value] . ", " . (int)$array_new['parent'][$value] . ", " . (int)$array_new['display_order'][$value] . "),";
-
-            $x++;
+            //set new values in database table
+            try {
+                $res = $this->db->query($query);
+                $res->execute();
+            } catch (Exception $e) {
+                return 'Error query in rebuild_index_display()';
+            }
+            return true;
         }
-        $query = rtrim($query, ",");
-        $query .= ' ON DUPLICATE KEY UPDATE display_order = VALUES(display_order);';
-
-        //set new values in database table
-        try {
-            $res = $this->db->query($query);
-            $res->execute();
-        } catch (Exception $e) {
-            return 'Error query in rebuild_index_display()';
-        }
-        return true;
     }
 
     /*
@@ -132,28 +132,30 @@ class ActionTree
     {
         $res = $this->db->prepare("SELECT id, parent FROM tree");
         $res->execute();
-        //Get all element tree
+        // get all element tree
         while ($row = $res->fetch()) {
             $array['id'][] = $row['id'];
             $array['parent'][] = $row['parent'];
         }
 
-        //view items
-        foreach ($array['id'] as $value => $key) {
+        // operations on selected elements
+        if (isset($array)) {
+            foreach ($array['id'] as $value => $key) {
 
-            //get parent
-            $res = $this->db->prepare("SELECT COUNT(id) FROM tree WHERE id = :parent");
-            $res->bindValue(':parent', $array['parent'][$value], PDO::PARAM_INT);
-            $res->execute();
+                // get parent
+                $res = $this->db->prepare("SELECT COUNT(id) FROM tree WHERE id = :parent");
+                $res->bindValue(':parent', $array['parent'][$value], PDO::PARAM_INT);
+                $res->execute();
 
-            // if parent not exist(result 0) $row[id] - remove element (exception if element is root [parent==0])
-            if ($res->fetchColumn() == 0) {
-                $result = $this->db->prepare("DELETE FROM `tree` WHERE `tree`.`id` = :id AND parent > 0");
-                $result->bindValue(':id', $array['id'][$value], PDO::PARAM_INT);
-                $result->execute();
+                // if parent not exist(result 0) $row[id] - remove element (exception if element is root [parent==0])
+                if ($res->fetchColumn() == 0) {
+                    $result = $this->db->prepare("DELETE FROM `tree` WHERE `tree`.`id` = :id AND parent > 0");
+                    $result->bindValue(':id', $array['id'][$value], PDO::PARAM_INT);
+                    $result->execute();
+                }
             }
+            return 'The tree was cleared, remove_lost_items()';
         }
-        return 'The tree was cleared';
     }
 
     /*
@@ -175,7 +177,7 @@ class ActionTree
 
         }
         $this->session_refresh($id);
-        return 'Set new name:' . $name . ' for element id:' . $id;
+        return 'Set new name: ' . $name . ' for element id: ' . $id;
     }
 
     /*
@@ -183,13 +185,21 @@ class ActionTree
      */
     function move_left(int $id)
     {
+        $res = $this->db->prepare("SELECT parent FROM `tree` WHERE id = :id");
+        $res->bindValue(':id', $id, PDO::PARAM_INT);
+        $res->execute();
+
+        if($res->fetchColumn() == 0){
+            return 'Can not move element in left. Element already is in main branch.';
+        }
+
         try {
             try {
                 $res = $this->db->prepare("(SELECT parent FROM `tree` WHERE id = (SELECT parent FROM `tree` WHERE id = :id))");
                 $res->bindValue(':id', $id, PDO::PARAM_INT);
                 $res->execute();
             } catch (Exception $e) {
-                return 'Read error. Can not move left.';
+                return 'Error reading data. Can not move left.';
             }
             $parent = $res->fetchColumn();
 
@@ -209,24 +219,22 @@ class ActionTree
                     $result->bindValue(':parent_id', $parent, PDO::PARAM_STR);
                     $result->execute();
                 }
-
-
             }
-
         } catch (Exception $e) {
-            return 'Error writing. Can not move left.';
+            return 'Error writing data. Can not move left.';
         }
 
         $this->rebuild_index_display();
         $this->session_refresh($id);
-        return 'Element id:' . $id . ' move left.';
+        return 'Moved left, element id: ' . $id . ' name: ' . $this->id_to_name($id);
     }
 
     /*
      * Method for moving tree elements
+     * Second parameter only used himself (by move_up - recursive function)
      */
     function move_up(int $id, int $position_base_element = 0, int $parent = 0)
-    {// second parameter only used $this->move_up himself
+    {
         try {
             //check current position element
             $res = $this->db->prepare("SELECT display_order, parent FROM `tree` WHERE id = :id");
@@ -249,7 +257,6 @@ class ActionTree
             }
             $position_higher_element = $result->fetchColumn();
 
-
             // element exist move down
             if ($position_higher_element > 0) {
                 $set = $this->db->prepare("UPDATE `tree` SET display_order = :display_order WHERE id = :id AND parent = :parent");
@@ -263,20 +270,26 @@ class ActionTree
                 $set->bindValue(':display_order', $position_base_element - 1, PDO::PARAM_INT);
                 $set->bindValue(':parent', $parent, PDO::PARAM_INT);
                 $set->execute();
+
+                $this->session_refresh($id);
+                return 'Moved up, element id: ' . $id . ' name: ' . $this->id_to_name($id);
             } else {
 
                 if ($position_base_element > 1) {
                     $position_base_element = $position_base_element - 1;
 
                     $this->move_up($id, $position_base_element, $parent);
+                } else {
+                    $this->session_refresh($id);
+                    return 'Can not move element';
                 }
             }
 
         } catch (Exception $e) {
-            return 'Read error. Can not move up.' . $e;
+            return 'Error. Can not move up.';
         }
         $this->session_refresh($id);
-        return 'Element place is:' . $res->fetchColumn() . ' move up.';
+
     }
 
     /*
@@ -317,8 +330,9 @@ class ActionTree
             $set->execute();
 
             $this->session_refresh($id);
-            return 'Move down element.';
+            return 'Moved down, element id: ' . $id . ' name: ' . $this->id_to_name($id);
         } else {
+            $this->session_refresh($id);
             return 'Can not move element';
         }
     }
@@ -329,20 +343,23 @@ class ActionTree
     function move_right(int $id, int $move_more = 0)
     {
         $this->list = array_fill(0, 0, 0);
+        // retrieves arrays of all elements
         $object = new GenerateTreeArrays($this->db);
         $array = $object->generate_tree(true);
 
+        // determines the identifier of an element lower than ours
         foreach ($array['id'] as $value => $key) {
             if ($array['id'][$value] == $id) {
                 if ($move_more > 0) {
-                    $id_right = (int)$array['id'][$value + $move_more];
+                    $id_right = $array['id'][$value + $move_more] ?? 0;
                 } else {
-                    $id_right = (int)$array['id'][$value + 1];
+                    $id_right = $array['id'][$value + 1] ?? 0;
                 }
             }
         }
 
-        if ($this->check_is_conflict($id, $id_right) == false) {
+        // if not exist conflict moved element. if exist conflict check_is_conflict() "runs in the background"
+        if ($this->check_is_conflict($id, (int)$id_right) == false) {
             $set = $this->db->prepare("UPDATE `tree` SET parent = :parent WHERE id = :id");
             $set->bindValue(':id', $id, PDO::PARAM_INT);
             $set->bindValue(':parent', $id_right, PDO::PARAM_INT);
@@ -350,22 +367,24 @@ class ActionTree
 
             $this->rebuild_index_display();
             $this->session_refresh($id);
-            return 'Move element to right';
+            return 'Moved right, element id: ' . $id . ' name: ' . $this->id_to_name($id);
 
+            // if exist conflict, try moved another place (recursion)
         } else {
             $move_more++;
             $this->move_right($id, $move_more);
             $this->session_refresh($id);
-            return "Can not move element \n";
+            return 'Moved right, element id: ' . $id . ' name: ' . $this->id_to_name($id);
         }
-
-
     }
 
-
+    /*
+     * Auxiliary method for functions move_right()
+     * Method of checking whether the element can be moved to the branch
+     * Return FALSE if conflict no exist. Return TRUE if conflict exist.
+     */
     function check_is_conflict(int $id, int $to)
     {
-        
         // check mutual kinship
         $result = $this->db->prepare("SELECT COUNT(id) FROM `tree` WHERE id = :id AND parent = :parent");
         $result->bindValue(':id', $to, PDO::PARAM_INT);
@@ -375,49 +394,28 @@ class ActionTree
         // check mutual kinship
         if ($result->fetchColumn() == 0) {
 
-
-
+            // check if there is no kinship in the sub branch
             $list = $this->get_all_parents_this_element($to);
-            //print_r($list);
             if (in_array($id, $list) == 0) {
-                echo 'allow enter';
+                // it's okay. conflict no exist.
                 return false;
-
-            } elseif (in_array($id, $list) == 1) {
-                echo 'not allow enter';
-                echo "block1\n";
-                return true;
-
             }
             return true;
-
-
-
-            $sub_branch = $this->put_in_deep((int)$to);
-
-
-            if ($sub_branch == 0) {
-                return false;
-
-            } else {
-                //  $this->check_is_conflict((int)$id, (int)$sub_branch);
-                echo "block1\n";
-                return true;
-            }
-
 
         } else {
-            echo "block2\n";
             return true;
         }
-
     }
 
 
+    /*
+     * Auxiliary method for functions check_is_conflict() and move_right()
+     * Method returns all parent elements
+     */
     public $list = array();
+
     function get_all_parents_this_element(int $id)
     {
-
         $result = $this->db->prepare("SELECT parent FROM `tree` WHERE id = :id ");
         $result->bindValue(':id', $id, PDO::PARAM_INT);
         $result->execute();
@@ -431,15 +429,6 @@ class ActionTree
         }
 
         return $this->list;
-    }
-
-    function put_in_deep(int $id)
-    {
-        $result = $this->db->prepare("SELECT parent FROM `tree` WHERE id = :id ");
-        $result->bindValue(':id', $id, PDO::PARAM_INT);
-        $result->execute();
-
-        return $result->fetchColumn();
     }
 
 
@@ -466,4 +455,16 @@ class ActionTree
     }
 
 
+    /*
+     * The method returns the name for the identifier
+     * Used primarily for displaying messages (frame history operation in frontend)
+     */
+    function id_to_name(int $id)
+    {
+        $result = $this->db->prepare("SELECT name FROM `tree` WHERE id = :id ");
+        $result->bindValue(':id', $id, PDO::PARAM_INT);
+        $result->execute();
+
+        return $result->fetchColumn();
+    }
 }

@@ -25,7 +25,7 @@ SET time_zone = "+00:00";
 --
 -- Struktura tabeli dla tabeli `tree`
 --
-
+DROP TABLE IF EXISTS `tree`;
 CREATE TABLE `tree` (
   `id` int(11) NOT NULL,
   `name` varchar(255) COLLATE utf8_polish_ci NOT NULL,
