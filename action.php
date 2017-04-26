@@ -55,15 +55,35 @@ if (isset($_GET['id'])) {
      */
     if ($_GET['id'] == 'file_add') {
         if (!empty($_POST['new_file']) && !empty($_POST['id'])) {
+            echo $files->file_add($_POST['new_file'], (int)$_POST['id']);
         }
-        echo $files->file_add($_POST['new_file'], (int)$_POST['id']);
+
     }
-    //
+
     if ($_GET['id'] == 'file_remove') {
         if (!empty($_POST['id'])) {
+            echo $files->file_remove((int)$_POST['id']);
         }
-        echo $files->file_remove((int)$_POST['id']);
+
     }
+    if ($_GET['id'] == 'file_rename') {
+        if (!empty($_POST['id'])) {
+            echo $files->file_rename((int)$_POST['id'], $_POST['file_new_name']);
+        }
+    }
+
+    if ($_GET['id'] == 'file_move_up') {
+        if (!empty($_POST['id'])) {
+            echo $files->file_move_up((int)$_POST['id'],(int)$_POST['folder']);
+        }
+    }
+
+    if ($_GET['id'] == 'file_move_down') {
+        if (!empty($_POST['id'])) {
+            echo $files->file_move_down((int)$_POST['id'],(int)$_POST['folder']);
+        }
+    }
+
 
 
 }

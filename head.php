@@ -28,15 +28,14 @@ require_once('ExternalFiles/libs/Smarty.class.php');
 
 function __autoload_class($class)
 {
-    $class = explode('\\', $class);
     try {
-        require_once('class/' . end($class) . '.class.php');
+        require_once('class/' . $class . '.class.php');
     } catch (exception $e) {
         try {
-            require_once('class/' . strtolower(end($class)) . '.class.php');
+            require_once('class/' . strtolower($class) . '.class.php');
         } catch (exception $e) {
             $class = mb_convert_case($class, MB_CASE_TITLE, 'UTF-8');
-            require_once('class/' . end($class) . '.class.php');
+            require_once('class/' . $class . '.class.php');
         }
     }
 }

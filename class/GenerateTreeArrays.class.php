@@ -5,7 +5,7 @@
  * User: Grzegorz Chwiluk
  * Date: 2017-04-22
  * Time: 15:02
- * Class generate multi arrays based on database.
+ * Class generate tree folders as multi arrays based on database.
  * Return json data or arrays.
  */
 

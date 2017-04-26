@@ -52,7 +52,7 @@ function refresh() {
         $.ajax({
             async: false,
             type: 'GET',
-            url: 'ajax.php?get_position=true',
+            url: 'ajax.php?get_position_folder=true',
             dataType: "json",
             'success': function (data) {
                 $handle.treeview('selectNode', data);
@@ -146,6 +146,10 @@ document.addEventListener("keydown", function (event) {
     (event.which == '39') ? move('right') : false;
     //key delete
     (event.which == '46') ? remove() : false;
+    //key HOME
+    (event.which == '36') ? file_move('up') : false;
+    //key END
+    (event.which == '35') ? file_move('down') : false;
 });
 
 function clear_history() {
@@ -154,7 +158,7 @@ function clear_history() {
 
 
 /*
-`* Files operation
+ `* Files operation
  */
 
 function file_add() {
@@ -171,14 +175,40 @@ function file_add() {
     });
 }
 
-function file_remove($id){
-
+function file_remove($id) {
     $.post("action.php?id=file_remove", {
         id: $id
     }, function (response) {
         message(response);
     });
 }
-function file_selected($id){
-    alert($id);
+
+function file_selected($id) {
+    $("input[class='selected_file']").val($id);
+    document.getElementById("selected_file").innerHTML = $id;
+
+}
+
+function file_rename() {
+    var id = $("input[class='selected_file']").val();
+    var file_new_name = $("input[name='file_new_name']").val();
+
+    $.post("action.php?id=file_rename", {
+        id: id,
+        file_new_name: file_new_name
+    }, function (response) {
+        message(response);
+    });
+}
+
+function file_move($move) {
+    var id = $("input[class='selected_file']").val();
+    var folder = $("input[name='id']").val();
+
+    $.post("action.php?id=file_move_" + $move, {
+        id: id,
+        folder: folder
+    }, function (response) {
+        message(response);
+    });
 }
