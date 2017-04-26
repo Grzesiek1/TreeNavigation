@@ -25,6 +25,15 @@ SET time_zone = "+00:00";
 --
 -- Struktura tabeli dla tabeli `tree`
 --
+DROP TABLE IF EXISTS `elements`;
+CREATE TABLE `elements` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) COLLATE utf8_polish_ci NOT NULL,
+  `folder` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_polish_ci;
+ALTER TABLE `elements` ADD PRIMARY KEY(`id`);
+ALTER TABLE `elements` MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
 DROP TABLE IF EXISTS `tree`;
 CREATE TABLE `tree` (
   `id` int(11) NOT NULL,

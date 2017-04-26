@@ -448,7 +448,7 @@ class ActionTree
      * Method memorizing the last moved item.
      * Need when using moving items using the keyboard.
      */
-    private function session_refresh(int $id)
+    protected function session_refresh(int $id)
     {
         $_SESSION['id_operation'] = $id;
         return true;

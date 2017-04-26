@@ -19,7 +19,7 @@ class GenerateTreeArrays extends GenerateTreeBased
     function __construct($db)
     {
         parent::__construct($db);
-        $this->ElementsGenerate = new ElementsGenerate;
+        $this->ElementsGenerate = new ElementsGenerate($this->db);
     }
 
     function __call($method, $args)
@@ -49,7 +49,7 @@ class GenerateTreeArrays extends GenerateTreeBased
                 // (example - When the item has already been exposed elsewhere as a child)
                 if (!$this->whether_value_occurred($row['name'])) {
                     // generate main element
-                    $this->return .= '{"id":' . $row['id'] . ', "text": "' . $row['name'] . '",'.$this->elements_put().'},';
+                    $this->return .= '{"id":' . $row['id'] . ', "text": "' . $row['name'] . '",'.$this->elements_put((int)$row['id']).'},';
                     $this->return_array['id'][] = $row['id'];
                     $this->return_array['name'][] = $row['name'];
                 }
@@ -80,7 +80,7 @@ class GenerateTreeArrays extends GenerateTreeBased
         // generate main element if not generate early
         if (!$this->whether_value_occurred($parent_name)) {
             // generate main element
-            $this->return .= '{"id":' . $id . ', "text": "' . $parent_name . '", ' . $this->elements_put();
+            $this->return .= '{"id":' . $id . ', "text": "' . $parent_name . '", ' . $this->elements_put((int)$id);
             $this->return_array['id'][] = $id;
             $this->return_array['name'][] = $parent_name;
         }
@@ -102,7 +102,7 @@ class GenerateTreeArrays extends GenerateTreeBased
                 // if element have a second sub branch
                 if ($this->check_have_child((int)$row['id'])) {
                     // show element
-                    $this->return .= '{"id":' . $row['id'] . ', "text": "' . $row['name'] . '",' . $this->elements_put();
+                    $this->return .= '{"id":' . $row['id'] . ', "text": "' . $row['name'] . '",' . $this->elements_put((int)$row['id']);
                     $this->return_array['id'][] = $row['id'];
                     $this->return_array['name'][] = $row['name'];
                     // and use function generate sub branch (itself)
@@ -110,7 +110,7 @@ class GenerateTreeArrays extends GenerateTreeBased
                     // if element haven't a second sub branch only show element
                 } else {
                     // show element
-                    $this->return .= '{"id":' . $row['id'] . ', "text": "' . $row['name'] . '", ' . $this->elements_put() . '},';
+                    $this->return .= '{"id":' . $row['id'] . ', "text": "' . $row['name'] . '", ' . $this->elements_put((int)$row['id']) . '},';
                     $this->return_array['id'][] = $row['id'];
                     $this->return_array['name'][] = $row['name'];
                 }

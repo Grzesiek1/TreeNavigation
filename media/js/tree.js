@@ -121,6 +121,21 @@ function add() {
     });
 }
 
+
+function add_element() {
+    var id = $("input[name='id']").val();
+    var new_name_element = $("input[name='new_name_element']").val();
+
+
+    $.post("action.php?id=add_element", {
+        id: id,
+        new_name_element: new_name_element
+
+    }, function (response) {
+        message(response);
+    });
+}
+
 function move($move) {
     var id = $("input[name='id']").val();
     ($move == 'left') ? $src = "action.php?id=move_left" : false;
@@ -155,4 +170,13 @@ document.addEventListener("keydown", function (event) {
 
 function clear_history() {
     document.getElementById("history").innerHTML = '';
+}
+
+function delete_element($id){
+
+    $.post("action.php?id=delete_element", {
+        id: $id
+    }, function (response) {
+        message(response);
+    });
 }

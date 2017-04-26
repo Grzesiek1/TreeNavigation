@@ -1,15 +1,15 @@
-
+<div class="container">
     <div class="row">
         <div class="a col-lg-12 col-lg-offset-0">
 
             <div class="row frame grid-divider">
 
-                <div class="a col-sm-8 col-lg-offset-0">
+                <div class="a col-lg-7 col-lg-offset-0">
                     <h3>Structure:</h3>
                     <div id="tree"></div>
                 </div>
 
-                <div id="navigation_tree" class="a col-xs-3 col-xs-offset-0">
+                <div id="navigation_tree" class="a col-lg-5 col-xs-offset-0">
                     <div class="col-padding">
                         <h3>Structure navigation:</h3>
                         <b>Selected element:</b> <span id="selected_h" class="selected"></span>
@@ -25,13 +25,18 @@
                         <b>You can use keys on keyboard</b> <br>
                         <span style="font-size:10px;">(<span class="red">F2</span> rename, <span class="red">DELETE</span> remove, <span class="red">Directional arrows</span> to move element, <span class="red">ENTER</span> to add element)</span>
 
+                        <br>
 
-                        <br><br>
+                        <b>Add element (Enter a new "name"):</b> <br>
+                        <input name="new_name_element"/>
+                        <button onclick="add_element();" type="button">Add element</button>
+
+                        <br>
                         <b>Rename (Enter a new "name"):</b> <br>
                         <input class="selected" name="new_name"/>
                         <button onclick="rename();" type="button">Rename</button>
 
-                        <div><b>Add new element (Enter a unique "name")</b><br>
+                        <div><b>Add new folder (Enter a unique "name")</b><br>
                         <span style="font-size:10px;">(First click the place where you want to add)</span></div>
 
                         <table>
@@ -43,7 +48,7 @@
                             </tr>
                             <tr>
                                 <td colspan="2">
-                                    <button onclick="add();" type="button">Add element</button>
+                                    <button onclick="add();" type="button">Add folder</button>
                                 </td>
                             </tr>
                         </table>
@@ -66,3 +71,4 @@
             </div>
         </div>
     </div>
+</div>

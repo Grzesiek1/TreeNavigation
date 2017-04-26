@@ -7,6 +7,7 @@
  */
 require_once('head.php');
 $object = new ActionTree($db);
+$element = new ElementsGenerate($db);
 
 if (isset($_GET['id'])) {
 
@@ -44,5 +45,17 @@ if (isset($_GET['id'])) {
         if (!empty($_POST['id']))
             echo $object->move_right($_POST['id']);
     }
+
+
+    if ($_GET['id'] == 'add_element') {
+        if (!empty($_POST['new_name_element']) && !empty($_POST['id'])){}
+            echo $element->add_element($_POST['new_name_element'], (int)$_POST['id']);
+    }
+    //
+    if ($_GET['id'] == 'delete_element') {
+        if (!empty($_POST['id'])){}
+        echo $element->delete_element((int)$_POST['id']);
+    }
+
 
 }
