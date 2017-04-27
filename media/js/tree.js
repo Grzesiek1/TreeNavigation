@@ -1,6 +1,10 @@
 /**
  * Created by Grzegorz Chwiluk on 2017-04-24.
  */
+
+/*
+* init tree
+ */
 $(function () {
     $.ajax({
         type: 'GET',
@@ -15,6 +19,7 @@ $(function () {
                 $('.selected').val(node.text);
                 $('.selected').text(node.text + ' (id:' + node.id + ')');
                 $('.selected_id').val(node.id);
+                save_element_selected(node.id);
             }
         });
 
@@ -30,7 +35,9 @@ $(function () {
     });
 });
 
-
+/*
+ *refresh tree (used during operation -move,rename,remove, etc.)
+ */
 function refresh() {
     $.ajax({
         async: false,
@@ -47,6 +54,7 @@ function refresh() {
                 $('.selected').val(node.text);
                 $('.selected').text(node.text + ' (id:' + node.id + ')');
                 $('.selected_id').val(node.id);
+                save_element_selected(node.id);
             }
         });
         $.ajax({
@@ -63,6 +71,9 @@ function refresh() {
     });
 }
 
+/*
+* Return message to 'History operation' in frontend
+ */
 function message(content) {
     if (content) {
         var date = new Date();
@@ -76,6 +87,13 @@ function message(content) {
     }
 }
 
+/**
+ * Folder folder
+ */
+
+/*
+* Used to rename folder
+ */
 function rename() {
     var id = $("input[name='id']").val();
     var new_name = $("input[name='new_name']").val();
@@ -89,6 +107,9 @@ function rename() {
     });
 }
 
+/*
+* Used to remove folder
+ */
 function remove() {
     var id = $("input[name='id']").val();
 
@@ -103,6 +124,9 @@ function remove() {
     $('.selected_id').val('');
 }
 
+/*
+ * Used to add folder
+ */
 function add() {
     var id = $("input[name='id']").val();
     var add_name = $("input[name='add_name']").val();
@@ -121,6 +145,9 @@ function add() {
     });
 }
 
+/*
+ * Used to move folder
+ */
 function move($move) {
     var id = $("input[name='id']").val();
     ($move == 'left') ? $src = "action.php?id=move_left" : false;
@@ -135,6 +162,9 @@ function move($move) {
     });
 }
 
+/*
+* Support of keys to operate on the tree
+ */
 document.addEventListener("keydown", function (event) {
     //key left
     (event.which == '37') ? move('left') : false;
@@ -152,15 +182,20 @@ document.addEventListener("keydown", function (event) {
     (event.which == '35') ? file_move('down') : false;
 });
 
+/*
+* Clear 'history operation'
+ */
 function clear_history() {
     document.getElementById("history").innerHTML = '';
 }
 
-
-/*
- `* Files operation
+/**
+ * Files operation
  */
 
+/*
+* Used to add file
+ */
 function file_add() {
     var id = $("input[name='id']").val();
     var new_file = $("input[name='new_file']").val();
@@ -175,6 +210,9 @@ function file_add() {
     });
 }
 
+/*
+ * Used to remove file
+ */
 function file_remove($id) {
     $.post("action.php?id=file_remove", {
         id: $id
@@ -183,12 +221,25 @@ function file_remove($id) {
     });
 }
 
+/*
+ * Used to selected file on list
+ */
 function file_selected($id) {
     $("input[class='selected_file']").val($id);
-    document.getElementById("selected_file").innerHTML = $id;
+    $('.selected_file').text($id);
 
+    $.post("ajax.php", {
+        id: $id,
+        get_file_name: 'true'
+    }, function (response) {
+        $('.selected_file').text(response + '(id:' + $id + ')');
+        $("input[name='file_new_name']").val(response);
+    });
 }
 
+/*
+ * Used to rename file
+ */
 function file_rename() {
     var id = $("input[class='selected_file']").val();
     var file_new_name = $("input[name='file_new_name']").val();
@@ -201,6 +252,9 @@ function file_rename() {
     });
 }
 
+/*
+ * Used to move file
+ */
 function file_move($move) {
     var id = $("input[class='selected_file']").val();
     var folder = $("input[name='id']").val();
@@ -211,4 +265,12 @@ function file_move($move) {
     }, function (response) {
         message(response);
     });
+}
+
+/*
+ * Used to save current selected element to PHP session
+ * Needed when refreshing list - must remember the last selection
+ */
+function save_element_selected($id) {
+    $.post("ajax.php?save_element_selected=true", {id: $id});
 }

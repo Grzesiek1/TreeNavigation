@@ -14,18 +14,22 @@ declare(strict_types = 1);
 class GenerateTreeArrays extends GenerateTreeBased
 {
 
-    private $ElementsGenerate;
+    /*
+     * Additional "extends"
+     */
+    private $ActionFiles;
 
     function __construct($db)
     {
         parent::__construct($db);
-        $this->ElementsGenerate = new ActionFiles($this->db);
+        $this->ActionFiles = new ActionFiles($this->db);
     }
 
     function __call($method, $args)
     {
-        return call_user_func_array(array($this->ElementsGenerate, $method), $args);
+        return call_user_func_array(array($this->ActionFiles, $method), $args);
     }
+    /* -- */
 
     private $return_array;
 
@@ -49,7 +53,7 @@ class GenerateTreeArrays extends GenerateTreeBased
                 // (example - When the item has already been exposed elsewhere as a child)
                 if (!$this->whether_value_occurred($row['name'])) {
                     // generate main element
-                    $this->return .= '{"id":' . $row['id'] . ', "text": "' . $row['name'] . '",'.$this->files_generate((int)$row['id']).'},';
+                    $this->return .= '{"id":' . $row['id'] . ', "text": "' . filter_var($row['name'], FILTER_SANITIZE_STRING) . '",'.$this->files_generate((int)$row['id']).'},';
                     $this->return_array['id'][] = $row['id'];
                     $this->return_array['name'][] = $row['name'];
                 }
@@ -91,7 +95,8 @@ class GenerateTreeArrays extends GenerateTreeBased
 
         // generate child element
         while ($row = $res->fetch()) {
-            if (!$this->whether_value_occurred($row['parent'])) {
+            // important type var!
+            if (!$this->whether_value_occurred((int)$row['parent'])) {
                 // tag starting group
                 $this->return .= ',"nodes": [';
                 $closed_tag = 1;
@@ -101,7 +106,7 @@ class GenerateTreeArrays extends GenerateTreeBased
                 // if element have a second sub branch
                 if ($this->check_have_child((int)$row['id'])) {
                     // show element
-                    $this->return .= '{"id":' . $row['id'] . ', "text": "' . $row['name'] . '",' . $this->files_generate((int)$row['id']);
+                    $this->return .= '{"id":' . $row['id'] . ', "text": "' . filter_var($row['name'], FILTER_SANITIZE_STRING) . '",' . $this->files_generate((int)$row['id']);
                     $this->return_array['id'][] = $row['id'];
                     $this->return_array['name'][] = $row['name'];
                     // and use function generate sub branch (itself)
@@ -109,7 +114,7 @@ class GenerateTreeArrays extends GenerateTreeBased
                     // if element haven't a second sub branch only show element
                 } else {
                     // show element
-                    $this->return .= '{"id":' . $row['id'] . ', "text": "' . $row['name'] . '", ' . $this->files_generate((int)$row['id']) . '},';
+                    $this->return .= '{"id":' . $row['id'] . ', "text": "' . filter_var($row['name'], FILTER_SANITIZE_STRING) . '", ' . $this->files_generate((int)$row['id']) . '},';
                     $this->return_array['id'][] = $row['id'];
                     $this->return_array['name'][] = $row['name'];
                 }

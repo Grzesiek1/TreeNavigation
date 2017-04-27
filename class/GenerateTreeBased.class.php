@@ -40,13 +40,14 @@ class GenerateTreeBased
     /*
      * Gets as a parameter any value
      * Return true if value occurs during the life of the object this class
+     * Method used by GeneratorTree as auxiliary
      */
     protected function whether_value_occurred($value)
     {
         $exist_value = 'no';
 
         for ($x = 0; $x < sizeof($this->array); $x++) {
-            if ($value == $this->array[$x]) {
+            if ($value === $this->array[$x]) {
                 $exist_value = 'yes';
             }
         }

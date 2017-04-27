@@ -31,7 +31,7 @@ class GenerateTreeHtml extends GenerateTreeBased
                 // (example - When the item has already been exposed elsewhere as a child)
                 if (!$this->whether_value_occurred($row['name'])) {
                     // generate main element
-                    $this->return .= '<li>' . $row['name'] . '</li>';
+                    $this->return .= '<li>' . filter_var($row['name'], FILTER_SANITIZE_STRING) . '</li>';
                 }
             }
         }
@@ -61,7 +61,8 @@ class GenerateTreeHtml extends GenerateTreeBased
 
         // generate child element
         while ($row = $res->fetch()) {
-            if (!$this->whether_value_occurred($row['parent'])) {
+            // important type var!
+            if (!$this->whether_value_occurred((int)$row['parent'])) {
                 // tag starting group
                 $this->return .= '<ul>';
                 $closed_tag = 1;
@@ -72,13 +73,13 @@ class GenerateTreeHtml extends GenerateTreeBased
                 // if element have a second sub branch
                 if ($this->check_have_child((int)$row['id'])) {
                     // show element
-                    $this->return .= '<li>' . $row['name'] . '</li>';
+                    $this->return .= '<li>' . filter_var($row['name'], FILTER_SANITIZE_STRING) . '</li>';
                     // and use function generate sub branch (itself)
                     $this->generate_child((int)$row['id'], $row['name']);
                     // if element haven't a second sub branch only show element
                 } else {
                     // show element
-                    $this->return .= '<li>' . $row['name'] . '</li>';
+                    $this->return .= '<li>' . filter_var($row['name'], FILTER_SANITIZE_STRING) . '</li>';
                 }
             }
         }

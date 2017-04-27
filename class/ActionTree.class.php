@@ -18,7 +18,7 @@ class ActionTree
     }
 
     /*
-     * Method use to add new elements tree
+     * Method use to add new folder tree
      */
     function add(string $name, int $parent = 0)
     {
@@ -33,19 +33,20 @@ class ActionTree
             }
         }
 
-        // Counts the number of elements in a branch
+        // Counts the number of folder in a branch
         $res = $this->db->prepare("SELECT MAX(display_order) FROM tree WHERE parent = :parent");
         $res->bindValue(':parent', $parent, PDO::PARAM_STR);
         $res->execute();
         $position_new_element = $res->fetchColumn() + 1;
 
-        // Adds a new tree element
+        // Adds a new folder to tree
         try {
             $res = $this->db->prepare("INSERT INTO `tree` (`id`, `name`, `parent`, `display_order`) VALUES ('', :name, :parent, :display_order)");
             $res->bindValue(':name', $name, PDO::PARAM_STR);
             $res->bindValue(':parent', $parent, PDO::PARAM_INT);
             $res->bindValue(':display_order', $position_new_element, PDO::PARAM_INT);
             $res->execute();
+
         } catch (Exception $e) {
             if (strpos($e->getMessage(), '1062') !== false) {
                 return 'Can not add. Such an element already exists.';
@@ -56,8 +57,9 @@ class ActionTree
         return 'Add new element, name: ' . $name;
     }
 
+    
     /*
-     * Method using to remove element tree
+     * Method using to remove folder from tree
      */
     function remove(int $id)
     {
@@ -76,9 +78,10 @@ class ActionTree
         return 'Element removed, id: ' . $id;
     }
 
+
     /*
      * This method repairs the index of the order.
-     * (Need in case delete items or moved element from another branch)
+     * (Need in case delete items or moved folder from another branch)
      */
     private function rebuild_index_display()
     {
@@ -126,8 +129,9 @@ class ActionTree
         }
     }
 
+
     /*
-     * This method remove elements without exist branches (from deleted branch)
+     * This method remove folder without exist branches (from deleted branch)
      */
     private function remove_lost_items()
     {
@@ -159,8 +163,9 @@ class ActionTree
         }
     }
 
+
     /*
-     * Method rename name element.
+     * Method rename name folder.
      */
     function rename(int $id, string $name)
     {
@@ -181,8 +186,9 @@ class ActionTree
         return 'Set new name: ' . $name . ' for element id: ' . $id;
     }
 
+
     /*
-     * Method for moving tree elements
+     * Method used to moving folder in tree
      */
     function move_left(int $id)
     {
@@ -230,9 +236,10 @@ class ActionTree
         return 'Moved left, element id: ' . $id . ' name: ' . $this->id_to_name($id);
     }
 
+
     /*
-     * Method for moving tree elements
-     * Second parameter only used himself (by move_up - recursive function)
+     * Method used to moving up folder in tree
+     * Second parameter only used himself (by move_up() - recursive function)
      */
     function move_up(int $id, int $position_base_element = 0, int $parent = 0)
     {
@@ -285,16 +292,15 @@ class ActionTree
                     return 'Can not move element';
                 }
             }
-
         } catch (Exception $e) {
             return 'Error. Can not move up.';
         }
         $this->session_refresh($id);
-
     }
 
+
     /*
-    * Method for moving tree elements
+    * Method used to moving down folder in tree
     */
     function move_down(int $id)
     {
@@ -338,8 +344,9 @@ class ActionTree
         }
     }
 
+
     /*
-    * Method for moving tree elements
+    * Method used to moving right folder in tree
     */
     function move_right(int $id, int $move_more = 0)
     {
@@ -379,6 +386,7 @@ class ActionTree
         }
     }
 
+
     /*
      * Auxiliary method for functions move_right()
      * Method of checking whether the element can be moved to the branch
@@ -411,7 +419,7 @@ class ActionTree
 
     /*
      * Auxiliary method for functions check_is_conflict() and move_right()
-     * Method returns all parent elements
+     * Method gets id folder and returns all parent folder as array list
      */
     public $list = array();
 
@@ -434,8 +442,8 @@ class ActionTree
 
 
     /*
-    * Determine the location of an item when using moving items using the keyboard.
-    * Return number occurrence (number on list in frontend)
+    * Check whether element occurrence. Used when moving items using the keyboard.
+    * Return true if element occurrence on list
     */
     function number_occurrence(int $id_element)
     {
@@ -445,11 +453,12 @@ class ActionTree
         return $return;
     }
 
+
     /*
      * Method memorizing the last moved item.
      * Need when using moving items using the keyboard.
      */
-    protected function session_refresh(int $folder_id)
+    public function session_refresh(int $folder_id)
     {
         $_SESSION['selected_folder_id'] = $folder_id;
         return true;

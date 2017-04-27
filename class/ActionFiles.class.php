@@ -8,12 +8,9 @@
  */
 class ActionFiles extends ActionTree
 {
-
-    function __construct($db)
-    {
-        $this->db = $db;
-    }
-
+    /*
+     * Generate 'files' elements for class GenerateTreeArrays
+     */
     function files_generate(int $id)
     {
         $res = $this->db->prepare("SELECT id, name FROM files WHERE folder = :id");
@@ -22,7 +19,7 @@ class ActionFiles extends ActionTree
 
         $return = '"tags": [';
         while ($row = $res->fetch()) {
-            $return .= '"<a class=no_link onclick=file_selected(' . $row['id'] . ');>' . $row['name'] . '</a> <a onclick=file_remove(' . $row['id'] . ');>X</a>",';
+            $return .= '"<a class=no_link onclick=file_selected(' . $row['id'] . ');>' . filter_var($row['name'], FILTER_SANITIZE_STRING) . '</a> <a onclick=file_remove(' . $row['id'] . ');>X</a>",';
         }
 
         $return .= "]";
@@ -31,6 +28,9 @@ class ActionFiles extends ActionTree
         return $return;
     }
 
+    /*
+    * Method used to add new file on list
+    */
     function file_add(string $name, int $folder)
     {
         $res = $this->db->prepare("INSERT INTO `files` (`id`, `name`, `folder`) VALUES ('', :name, :folder)");
@@ -42,6 +42,9 @@ class ActionFiles extends ActionTree
         return 'Added file, name: ' . $name;
     }
 
+    /*
+    * Method remove file on list
+    */
     function file_remove(int $id)
     {
         $name = $this->return_name((int)$id);
@@ -52,6 +55,9 @@ class ActionFiles extends ActionTree
         return 'Remove file, id: ' . $id . ' name: ' . $name;
     }
 
+    /*
+    * Method gets id and return name file
+    */
     function return_name($id)
     {
         $result = $this->db->prepare("SELECT name FROM `files` WHERE id = :id ");
@@ -61,6 +67,9 @@ class ActionFiles extends ActionTree
         return $result->fetchColumn();
     }
 
+    /*
+    * Method used to rename file
+    */
     function file_rename(int $id, string $name)
     {
         try {
@@ -75,42 +84,51 @@ class ActionFiles extends ActionTree
         return 'Set new name: ' . $name . ' for file id: ' . $id;
     }
 
-    function file_move_up($id, $folder)
+    /*
+     * Method based for move_up and move_down file
+     */
+    function core_file_move($id, $folder, $move)
     {
         $object = new GenerateTreeArrays($this->db);
         $array = $object->generate_tree(true);
 
-        foreach ($array['id'] as $value => $key) {
-            if ($array['id'][$value] == $folder) {
-                $folder = $array['id'][$value - 1];
-                $set = $this->db->prepare("UPDATE `files` SET folder = :folder WHERE id = :id");
-                $set->bindValue(':id', $id, PDO::PARAM_INT);
-                $set->bindValue(':folder', $folder, PDO::PARAM_INT);
-                $set->execute();
+        try {
+            foreach ($array['id'] as $value => $key) {
+                if ($array['id'][$value] == $folder) {
+                    if (isset($array['id'][$value + $move])) {
+                        $folder = $array['id'][$value + $move];
+                        $set = $this->db->prepare("UPDATE `files` SET folder = :folder WHERE id = :id");
+                        $set->bindValue(':id', $id, PDO::PARAM_INT);
+                        $set->bindValue(':folder', $folder, PDO::PARAM_INT);
+                        $set->execute();
 
-                $this->session_refresh($array['id'][$value - 1]);
-                return 'Moved up, file id: ' . $id . ' name: ' . $this->return_name($id);
+                        $this->session_refresh($array['id'][$value + $move]);
+                        return true;
+                    }
+                }
             }
+        } catch (Exception $e) {
+            return false;
         }
+
     }
 
+    /*
+     * Method used to move up file. Based on core_file_move()
+     */
+    function file_move_up($id, $folder)
+    {
+        if ($this->core_file_move($id, $folder, -1) == true)
+            return 'Moved up, file id: ' . $id . ' name: ' . $this->return_name($id);
+    }
+
+    /*
+     * Method used to move down file. Based on core_file_move()
+     */
     function file_move_down($id, $folder)
     {
-        $object = new GenerateTreeArrays($this->db);
-        $array = $object->generate_tree(true);
-
-        foreach ($array['id'] as $value => $key) {
-            if ($array['id'][$value] == $folder) {
-                $folder = $array['id'][$value + 1];
-                $set = $this->db->prepare("UPDATE `files` SET folder = :folder WHERE id = :id");
-                $set->bindValue(':id', $id, PDO::PARAM_INT);
-                $set->bindValue(':folder', $folder, PDO::PARAM_INT);
-                $set->execute();
-
-                $this->session_refresh($array['id'][$value + 1]);
-                return 'Moved up, file id: ' . $id . ' name: ' . $this->return_name($id);
-            }
-        }
+        if ($this->core_file_move($id, $folder, +1) == true)
+            return 'Moved down, file id: ' . $id . ' name: ' . $this->return_name($id);
     }
 
 }

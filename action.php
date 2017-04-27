@@ -83,7 +83,5 @@ if (isset($_GET['id'])) {
             echo $files->file_move_down((int)$_POST['id'],(int)$_POST['folder']);
         }
     }
-
-
-
+    
 }

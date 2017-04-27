@@ -80,26 +80,10 @@ h3 button {
     color: red;
 }
 
-/*.badge {*/
-    /*background-color: #777;*/
-    /*border-radius: 10px;*/
-    /*color: #fff;*/
-    /*display: inline-block;*/
-    /*font-size: 12px;*/
-    /*font-weight: bold;*/
-    /*line-height: 1;*/
-    /*min-width: 10px;*/
-    /*padding: 3px 7px;*/
-    /*text-align: center;*/
-    /*vertical-align: middle;*/
-    /*white-space: nowrap;*/
-/*}*/
-
-
 .badge {
     background-color: #ecf2ef;
     border-radius: 5px;
-    border:1px solid #c4c4c4;
+    border: 1px solid #c4c4c4;
     color: #232323;
     display: block;
     font-size: 11px;
@@ -116,6 +100,29 @@ h3 button {
     margin-right: 2px;
 }
 
-.no_link{
-    color:#232323;
+.no_link {
+    color: #232323;
+}
+
+/*
+* small screen
+*/
+@media (max-width: 1199px) {
+    #nav_folder {
+        float: left;
+        margin-right: 100px;
+    }
+
+    .col-padding {
+        width: 630px;
+        margin: auto;
+    }
+
+    .col-padding div {
+        border: 1px solid white;
+    }
+
+    #history_block {
+        clear: both;
+    }
 }
