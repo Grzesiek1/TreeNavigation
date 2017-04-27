@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: 127.0.0.1
--- Czas generowania: 26 Kwi 2017, 12:38
+-- Czas generowania: 27 Kwi 2017, 16:38
 -- Wersja serwera: 10.1.13-MariaDB
 -- Wersja PHP: 7.0.8
 
@@ -37,29 +37,25 @@ CREATE TABLE `files` (
 --
 
 INSERT INTO `files` (`id`, `name`, `folder`) VALUES
-  (1, 'Kartka', 11),
-  (2, 'Królik', 11),
-  (3, 'Telewizor', 5),
-  (4, 'Toster', 6),
-  (7, 'Testowa rzecz', 12),
-  (8, 'Rzecz', 2),
-  (9, 'duzo', 23),
-  (10, 'roznych', 23),
-  (12, 'roznychaass', 2),
-  (13, 'f', 3),
-  (14, 'fss', 3),
-  (15, 'easa', 23),
-  (16, 'test', 23),
-  (17, 'x5zg', 23),
-  (18, 'x5zg', 12),
-  (19, 'x5zg', 12),
-  (20, 'x5zg', 17),
-  (21, 'x5zg', 17),
-  (22, 'x5zg', 17),
-  (23, 'x5zg', 17),
-  (24, 'x5zg', 17),
-  (25, 'x5zg', 17),
-  (29, 'x5zg', 17);
+  (1, 'Harry Potter', 8),
+  (2, 'Ogniem i mieczem', 9),
+  (3, 'Spierdman', 8),
+  (4, 'Batman', 8),
+  (5, 'Kurs Symfony', 48),
+  (7, 'Kurs PHP', 10),
+  (8, 'Wydanie 5', 45),
+  (9, 'Wydanie 4', 45),
+  (10, 'Wydanie 6', 46),
+  (11, 'Wydanie 7', 46),
+  (12, 'Wydanie ogólne', 43),
+  (13, 'Samsung', 17),
+  (14, 'Toshiba', 17),
+  (15, 'Philips', 18),
+  (16, 'Samsung 4k promocja', 12),
+  (17, 'Najnowsze frameworki', 5),
+  (18, 'Kurs Excela', 49),
+  (19, 'Kurs Worda', 49),
+  (20, 'Programowanie w C++', 48);
 
 -- --------------------------------------------------------
 
@@ -79,30 +75,54 @@ CREATE TABLE `tree` (
 --
 
 INSERT INTO `tree` (`id`, `name`, `parent`, `display_order`) VALUES
-  (1, 'a', 0, 1),
-  (2, 'b', 0, 2),
-  (3, 'c', 0, 3),
-  (4, 'ba', 2, 1),
-  (5, 'bb', 2, 2),
-  (6, 'bc', 2, 3),
-  (7, 'd', 0, 4),
-  (8, 'e', 0, 5),
-  (9, 'f', 0, 6),
-  (10, 'bba', 5, 1),
-  (11, 'bbb', 5, 2),
-  (12, 'bbc', 11, 1),
-  (13, 'bbd', 5, 3),
-  (14, 'bbca', 12, 1),
-  (15, 'bbcb', 12, 2),
-  (16, 'bbcc', 12, 3),
-  (17, 'bbcd (sort: display_order - test)', 12, 5),
-  (18, 'bbce (sort: display_order - test)', 12, 4),
-  (19, 'da', 7, 1),
-  (20, 'db', 7, 2),
-  (21, 'dc', 7, 3),
-  (22, 'dba', 20, 1),
-  (23, 'dbb', 20, 2),
-  (24, 'dbc', 20, 3);
+  (1, 'Książki', 0, 1),
+  (2, 'RTV/AGD', 0, 2),
+  (3, 'Spożywka', 0, 3),
+  (4, 'Ubrania', 0, 4),
+  (5, 'Z roku 2017', 1, 1),
+  (6, 'Z roku 2016', 1, 2),
+  (7, 'Czasopisma', 6, 1),
+  (8, 'Nowoczesne', 5, 1),
+  (9, 'Historyczne', 5, 2),
+  (10, 'Informatyczne', 5, 3),
+  (11, 'Naukowe', 5, 4),
+  (12, 'Telewizory', 2, 1),
+  (13, 'Lodówki', 2, 2),
+  (14, 'Pralki', 2, 3),
+  (15, 'Komputery', 2, 4),
+  (16, 'Telefony', 2, 5),
+  (17, 'Duże', 12, 1),
+  (18, 'Małe', 12, 2),
+  (19, 'Standardowe', 13, 1),
+  (20, 'Przemysłowe', 13, 2),
+  (21, 'Stacjonarne', 15, 1),
+  (22, 'Podzespoły', 21, 1),
+  (23, 'Laptopy', 15, 2),
+  (24, 'Monitory', 15, 3),
+  (25, 'Napoje', 3, 1),
+  (26, 'Ciastka', 3, 2),
+  (27, 'Na wagę', 26, 1),
+  (28, 'Na sztuki', 26, 2),
+  (29, 'Wiśniowe', 27, 1),
+  (30, 'Orzechowe', 27, 2),
+  (31, 'Duże opakowania', 28, 1),
+  (32, 'Małe opakowania', 28, 2),
+  (33, 'Spodnie', 4, 1),
+  (34, 'Bluzy', 4, 2),
+  (35, 'Podkoszulki', 4, 3),
+  (36, 'Bielizna', 4, 4),
+  (37, 'Sportowe', 33, 1),
+  (38, 'Jeans', 33, 2),
+  (39, 'Levis', 38, 1),
+  (40, 'Lee', 38, 2),
+  (41, 'Nike', 37, 1),
+  (42, 'Addidas', 37, 2),
+  (43, 'Twój czas', 7, 1),
+  (44, 'Mój czas', 7, 2),
+  (45, 'Maj', 43, 1),
+  (46, 'Czerwiec', 44, 1),
+  (48, 'Dla zaawansowanych', 10, 1),
+  (49, 'Podstawowe', 10, 2);
 
 --
 -- Indeksy dla zrzutów tabel
@@ -129,12 +149,12 @@ ADD UNIQUE KEY `name` (`name`);
 -- AUTO_INCREMENT dla tabeli `files`
 --
 ALTER TABLE `files`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 --
 -- AUTO_INCREMENT dla tabeli `tree`
 --
 ALTER TABLE `tree`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

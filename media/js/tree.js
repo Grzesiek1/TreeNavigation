@@ -163,6 +163,16 @@ function move($move) {
 }
 
 /*
+ * Lock scroll page by keys HOME and END on keyboard
+ */
+$(document).keydown(function(event) {
+    if(event.which == "36" || event.which == "35") {
+        event.preventDefault();
+        return true;
+    }
+});
+
+/*
 * Support of keys to operate on the tree
  */
 document.addEventListener("keydown", function (event) {
