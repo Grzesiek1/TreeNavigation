@@ -7,22 +7,22 @@
  */
 require_once('head.php');
 
-$smarty->display('head.tpl');
+$template->display('head.tpl');
 
 if (isset($_GET['action'])) {
 
     if ($_GET['action'] == 'show_jquery') {
         
-        $smarty->display('show_jquery.tpl');
+        $template->display('show_jquery.tpl');
 
     } elseif ($_GET['action'] == 'show_html') {
         $object = new GenerateTreeHtml($db);
 
-        $smarty->assign('data', $object->generate_tree());
-        $smarty->display('show_html.tpl');
+        $template->assign('data', $object->generate_tree());
+        $template->display('show_html.tpl');
     }
 
 } else {
-    $smarty->display('index.tpl');
+    $template->display('index.tpl');
 }
-$smarty->display('footer.tpl');
+$template->display('footer.tpl');

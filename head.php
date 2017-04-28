@@ -24,8 +24,6 @@ try {
 }
 unset($dbc);
 
-require_once('ExternalFiles/libs/Smarty.class.php');
-
 function __autoload_class($class)
 {
     try {
@@ -42,5 +40,5 @@ function __autoload_class($class)
 
 spl_autoload_register('__autoload_class');
 
-$smarty = new Smarty();
+$template = new TemplateSystem();
 
