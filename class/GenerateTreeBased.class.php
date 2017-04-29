@@ -7,8 +7,7 @@
  * Time: 17:37
  * Base class for class GenerateTreeArrays and GenerateTreeHtml
  */
-
-declare(strict_types = 1);
+declare(strict_types=1);
 
 class GenerateTreeBased
 {
@@ -24,7 +23,7 @@ class GenerateTreeBased
      * Gets as a parameter element id
      * Return true if element contain sub branch
      */
-    protected function check_have_child(int $id)
+    protected function check_have_child(int $id): bool
     {
         $res = $this->db->prepare("SELECT COUNT(id) FROM tree WHERE parent = :id");
         $res->bindValue(':id', $id, PDO::PARAM_INT);
@@ -42,7 +41,7 @@ class GenerateTreeBased
      * Return true if value occurs during the life of the object this class
      * Method used by GeneratorTree as auxiliary
      */
-    protected function whether_value_occurred($value)
+    protected function whether_value_occurred($value): bool
     {
         $exist_value = 'no';
 

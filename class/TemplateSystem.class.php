@@ -6,12 +6,14 @@
  * Date: 2017-04-28
  * Time: 15:08
  */
+declare(strict_types=1);
+
 class TemplateSystem
 {
     public $path = 'templates';
-    public $variables = array();
+    private $variables = array();
 
-    function display($file)
+    public function display(string $file)
     {
         // define real src element
         $full_path_file = $this->path . '/' . $file;
@@ -28,7 +30,7 @@ class TemplateSystem
         echo $return;
     }
 
-    function assign($var_name, $var_value)
+    public function assign(string $var_name, $var_value)
     {
         $this->variables[$var_name] = $var_value;
     }

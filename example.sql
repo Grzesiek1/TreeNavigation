@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 4.5.1
--- http://www.phpmyadmin.net
+-- version 4.6.5.2
+-- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Czas generowania: 27 Kwi 2017, 16:38
--- Wersja serwera: 10.1.13-MariaDB
--- Wersja PHP: 7.0.8
+-- Czas generowania: 29 Kwi 2017, 17:33
+-- Wersja serwera: 10.1.21-MariaDB
+-- Wersja PHP: 7.1.1
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 SET time_zone = "+00:00";
@@ -132,14 +132,14 @@ INSERT INTO `tree` (`id`, `name`, `parent`, `display_order`) VALUES
 -- Indexes for table `files`
 --
 ALTER TABLE `files`
-ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indexes for table `tree`
 --
 ALTER TABLE `tree`
-ADD PRIMARY KEY (`id`),
-ADD UNIQUE KEY `name` (`name`);
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `name` (`name`);
 
 --
 -- AUTO_INCREMENT for dumped tables
@@ -149,12 +149,12 @@ ADD UNIQUE KEY `name` (`name`);
 -- AUTO_INCREMENT dla tabeli `files`
 --
 ALTER TABLE `files`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
 --
 -- AUTO_INCREMENT dla tabeli `tree`
 --
 ALTER TABLE `tree`
-MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

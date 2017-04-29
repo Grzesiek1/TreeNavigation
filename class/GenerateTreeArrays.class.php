@@ -8,8 +8,7 @@
  * Class generate tree folders as multi arrays based on database.
  * Return json data or arrays.
  */
-
-declare(strict_types = 1);
+declare(strict_types=1);
 
 class GenerateTreeArrays extends GenerateTreeBased
 {
@@ -29,6 +28,7 @@ class GenerateTreeArrays extends GenerateTreeBased
     {
         return call_user_func_array(array($this->ActionFiles, $method), $args);
     }
+
     /* -- */
 
     private $return_array;
@@ -36,7 +36,7 @@ class GenerateTreeArrays extends GenerateTreeBased
     /*
      * Generate main tree
      */
-    function generate_tree($array = false)
+    public function generate_tree(bool $array = false)
     {
         $res = $this->db->prepare("SELECT id, name, parent, display_order FROM tree order by parent ASC, display_order");
         $res->execute();
@@ -53,7 +53,7 @@ class GenerateTreeArrays extends GenerateTreeBased
                 // (example - When the item has already been exposed elsewhere as a child)
                 if (!$this->whether_value_occurred($row['name'])) {
                     // generate main element
-                    $this->return .= '{"id":' . $row['id'] . ', "text": "' . filter_var($row['name'], FILTER_SANITIZE_STRING) . '",'.$this->files_generate((int)$row['id']).'},';
+                    $this->return .= '{"id":' . $row['id'] . ', "text": "' . filter_var($row['name'], FILTER_SANITIZE_STRING) . '",' . $this->files_generate((int)$row['id']) . '},';
                     $this->return_array['id'][] = $row['id'];
                     $this->return_array['name'][] = $row['name'];
                 }

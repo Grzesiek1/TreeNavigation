@@ -7,8 +7,7 @@
  * Time: 00:29
  * Class allows to operate on elements tree
  */
-
-declare(strict_types = 1);
+declare(strict_types=1);
 
 class ActionTree
 {
@@ -20,7 +19,7 @@ class ActionTree
     /*
      * Method use to add new folder tree
      */
-    function add(string $name, int $parent = 0)
+    public function add(string $name, int $parent = 0): string
     {
         //check whether selected parent exist
         if ($parent != 0) {
@@ -57,11 +56,11 @@ class ActionTree
         return 'Add new element, name: ' . $name;
     }
 
-    
+
     /*
      * Method using to remove folder from tree
      */
-    function remove(int $id)
+    public function remove(int $id): string
     {
         try {
             $result = $this->db->prepare("DELETE FROM `tree` WHERE `tree`.`id` = :id ");
@@ -83,7 +82,7 @@ class ActionTree
      * This method repairs the index of the order.
      * (Need in case delete items or moved folder from another branch)
      */
-    private function rebuild_index_display()
+    private function rebuild_index_display(): bool
     {
         $res = $this->db->prepare("SELECT id, parent, display_order FROM tree ORDER BY parent ASC, display_order");
         $res->execute();
@@ -133,7 +132,7 @@ class ActionTree
     /*
      * This method remove folder without exist branches (from deleted branch)
      */
-    private function remove_lost_items()
+    private function remove_lost_items(): string
     {
         $res = $this->db->prepare("SELECT id, parent FROM tree");
         $res->execute();
@@ -167,7 +166,7 @@ class ActionTree
     /*
      * Method rename name folder.
      */
-    function rename(int $id, string $name)
+    public function rename(int $id, string $name): string
     {
         try {
             $result = $this->db->prepare("UPDATE `tree` SET `name` = :name WHERE `tree`.`id` = :id");
@@ -190,7 +189,7 @@ class ActionTree
     /*
      * Method used to moving folder in tree
      */
-    function move_left(int $id)
+    public function move_left(int $id): string
     {
         $res = $this->db->prepare("SELECT parent FROM `tree` WHERE id = :id");
         $res->bindValue(':id', $id, PDO::PARAM_INT);
@@ -241,7 +240,7 @@ class ActionTree
      * Method used to moving up folder in tree
      * Second parameter only used himself (by move_up() - recursive function)
      */
-    function move_up(int $id, int $position_base_element = 0, int $parent = 0)
+    public function move_up(int $id, int $position_base_element = 0, int $parent = 0): string
     {
         try {
             //check current position element
@@ -302,7 +301,7 @@ class ActionTree
     /*
     * Method used to moving down folder in tree
     */
-    function move_down(int $id)
+    public function move_down(int $id): string
     {
         //check current position element
         $res = $this->db->prepare("SELECT display_order, parent FROM `tree` WHERE id = :id");
@@ -348,7 +347,7 @@ class ActionTree
     /*
     * Method used to moving right folder in tree
     */
-    function move_right(int $id, int $move_more = 0)
+    public function move_right(int $id, int $move_more = 0): string
     {
         $this->list = array_fill(0, 0, 0);
         // retrieves arrays of all elements
@@ -392,7 +391,7 @@ class ActionTree
      * Method of checking whether the element can be moved to the branch
      * Return FALSE if conflict no exist. Return TRUE if conflict exist.
      */
-    function check_is_conflict(int $id, int $to)
+    private function check_is_conflict(int $id, int $to): bool
     {
         // check mutual kinship
         $result = $this->db->prepare("SELECT COUNT(id) FROM `tree` WHERE id = :id AND parent = :parent");
@@ -423,7 +422,7 @@ class ActionTree
      */
     public $list = array();
 
-    function get_all_parents_this_element(int $id)
+    private function get_all_parents_this_element(int $id): array
     {
         $result = $this->db->prepare("SELECT parent FROM `tree` WHERE id = :id ");
         $result->bindValue(':id', $id, PDO::PARAM_INT);
@@ -445,7 +444,7 @@ class ActionTree
     * Check whether element occurrence. Used when moving items using the keyboard.
     * Return true if element occurrence on list
     */
-    function number_occurrence(int $id_element)
+    public function number_occurrence(int $id_element): int
     {
         $object = new GenerateTreeArrays($this->db);
         $return = array_search($id_element, $object->generate_tree(true)['id']);
@@ -458,7 +457,7 @@ class ActionTree
      * Method memorizing the last moved item.
      * Need when using moving items using the keyboard.
      */
-    public function session_refresh(int $folder_id)
+    public function session_refresh(int $folder_id): bool
     {
         $_SESSION['selected_folder_id'] = $folder_id;
         return true;
@@ -469,7 +468,7 @@ class ActionTree
      * The method returns the name for the identifier
      * Used primarily for displaying messages (frame history operation in frontend)
      */
-    function id_to_name(int $id)
+    protected function id_to_name(int $id): string
     {
         $result = $this->db->prepare("SELECT name FROM `tree` WHERE id = :id ");
         $result->bindValue(':id', $id, PDO::PARAM_INT);

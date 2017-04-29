@@ -6,15 +6,14 @@
  * Time: 17:37
  * Class generate tree in form html based on tag <ul> <li>.
  */
-
-declare(strict_types = 1);
+declare(strict_types=1);
 
 class GenerateTreeHtml extends GenerateTreeBased
 {
     /*
      * Generate main tree
      */
-    function generate_tree()
+    public function generate_tree(): string
     {
         $res = $this->db->prepare("SELECT id, name, parent, display_order FROM tree order by parent ASC, display_order");
         $res->execute();

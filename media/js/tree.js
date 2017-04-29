@@ -3,7 +3,7 @@
  */
 
 /*
-* init tree
+ * init tree
  */
 $(function () {
     $.ajax({
@@ -72,7 +72,7 @@ function refresh() {
 }
 
 /*
-* Return message to 'History operation' in frontend
+ * Return message to 'History operation' in frontend
  */
 function message(content) {
     if (content) {
@@ -92,7 +92,7 @@ function message(content) {
  */
 
 /*
-* Used to rename folder
+ * Used to rename folder
  */
 function rename() {
     var id = $("input[name='id']").val();
@@ -108,7 +108,7 @@ function rename() {
 }
 
 /*
-* Used to remove folder
+ * Used to remove folder
  */
 function remove() {
     var id = $("input[name='id']").val();
@@ -165,15 +165,15 @@ function move($move) {
 /*
  * Lock scroll page by keys HOME and END on keyboard
  */
-$(document).keydown(function(event) {
-    if(event.which == "36" || event.which == "35") {
+$(document).keydown(function (event) {
+    if (event.which == "36" || event.which == "35" || event.which == "38" || event.which == "40") {
         event.preventDefault();
         return true;
     }
 });
 
 /*
-* Support of keys to operate on the tree
+ * Support of keys to operate on the tree
  */
 document.addEventListener("keydown", function (event) {
     //key left
@@ -193,7 +193,7 @@ document.addEventListener("keydown", function (event) {
 });
 
 /*
-* Clear 'history operation'
+ * Clear 'history operation'
  */
 function clear_history() {
     document.getElementById("history").innerHTML = '';
@@ -204,7 +204,7 @@ function clear_history() {
  */
 
 /*
-* Used to add file
+ * Used to add file
  */
 function file_add() {
     var id = $("input[name='id']").val();
