@@ -22,7 +22,7 @@ class TemplateSystem
         require($full_path_file);
         $return = ob_get_clean();
 
-        // replace variables - ( TemplateSystem::assing() )
+        // replace variables - ( TemplateSystem::assign() )
         foreach ($this->variables as $key => $value) {
             $return = str_replace('{$' . $key . '}', $value, $return);
         }

@@ -5,7 +5,7 @@
 /*
  * init tree
  */
-$(function () {
+function refresh() {
     $.ajax({
         type: 'GET',
         url: 'ajax.php?json=true',
@@ -30,33 +30,6 @@ $(function () {
         $('#btn-collapse-all').on('click', function () {
             $handle.treeview('collapseAll', {silent: 0});
         });
-    }).fail(function (response) {
-        console.log(response);
-    });
-});
-
-/*
- *refresh tree (used during operation -move,rename,remove, etc.)
- */
-function refresh() {
-    $.ajax({
-        async: false,
-        type: 'GET',
-        url: 'ajax.php?json=true',
-        dataType: "json"
-    }).done(function (response) {
-
-        var $handle = $('#tree').treeview({
-            levels: 99,
-            data: response,
-            showTags: true,
-            onNodeSelected: function (event, node) {
-                $('.selected').val(node.text);
-                $('.selected').text(node.text + ' (id:' + node.id + ')');
-                $('.selected_id').val(node.id);
-                save_element_selected(node.id);
-            }
-        });
         $.ajax({
             async: false,
             type: 'GET',
@@ -70,6 +43,7 @@ function refresh() {
         console.log(response);
     });
 }
+refresh();
 
 /*
  * Return message to 'History operation' in frontend

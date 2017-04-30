@@ -48,7 +48,7 @@ if (isset($_GET['get_position_file'])) {
 if (isset($_POST['get_file_name'])) {
     if ($_POST['get_file_name'] == true) {
 
-        $object = new ActionFiles($db);
+        $object = new Files\ActionFiles($db);
         echo $object->return_name($_POST['id']);
         die;
     }
