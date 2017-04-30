@@ -122,7 +122,8 @@ class ActionTree
                 $res = $this->db->query($query);
                 $res->execute();
             } catch (Exception $e) {
-                return 'Error query in rebuild_index_display()';
+                echo 'Error query in rebuild_index_display()';
+                return false;
             }
             return true;
         }
@@ -262,20 +263,19 @@ class ActionTree
                 $result->bindValue(':parent', $parent, PDO::PARAM_INT);
                 $result->execute();
             }
-            $position_higher_element = $result->fetchColumn();
+            $upper_id = $result->fetchColumn();
 
             // element exist move down
-            if ($position_higher_element > 0) {
-                $set = $this->db->prepare("UPDATE `tree` SET display_order = :display_order WHERE id = :id AND parent = :parent");
-                $set->bindValue(':display_order', $position_base_element, PDO::PARAM_INT);
-                $set->bindValue(':id', $position_higher_element, PDO::PARAM_INT);
-                $set->bindValue(':parent', $parent, PDO::PARAM_INT);
-                $set->execute();
+            if ($upper_id > 0) {
 
-                $set = $this->db->prepare("UPDATE `tree` SET display_order = :display_order WHERE id = :id AND parent = :parent");
+                // replace display_order between row
+                $set = $this->db->prepare("UPDATE tree a
+ INNER JOIN tree b ON a.id <> b.id
+   SET a.display_order = b.display_order
+ WHERE a.id IN (:id,:upper_id) AND b.id IN (:id,:upper_id)");
+
                 $set->bindValue(':id', $id, PDO::PARAM_INT);
-                $set->bindValue(':display_order', $position_base_element - 1, PDO::PARAM_INT);
-                $set->bindValue(':parent', $parent, PDO::PARAM_INT);
+                $set->bindValue(':upper_id', $upper_id, PDO::PARAM_INT);
                 $set->execute();
 
                 $this->session_refresh($id);
@@ -320,19 +320,18 @@ class ActionTree
         $result->bindValue(':parent', $parent, PDO::PARAM_INT);
         $result->execute();
 
-        $upper_id = $result->fetchColumn();
+        $lower_id = $result->fetchColumn();
         //check exist upper element
-        if ($upper_id > 0) {
-            $set = $this->db->prepare("UPDATE `tree` SET display_order = :display_order WHERE id = :id AND parent = :parent");
-            $set->bindValue(':display_order', $current_position, PDO::PARAM_INT);
-            $set->bindValue(':id', $upper_id, PDO::PARAM_INT);
-            $set->bindValue(':parent', $parent, PDO::PARAM_INT);
-            $set->execute();
+        if ($lower_id > 0) {
 
-            $set = $this->db->prepare("UPDATE `tree` SET display_order = :display_order WHERE id = :id AND parent = :parent");
+            // replace display_order between row
+            $set = $this->db->prepare("UPDATE tree a
+ INNER JOIN tree b ON a.id <> b.id
+   SET a.display_order = b.display_order
+ WHERE a.id IN (:id,:lower_id) AND b.id IN (:id,:lower_id)");
+
             $set->bindValue(':id', $id, PDO::PARAM_INT);
-            $set->bindValue(':display_order', $upper_position, PDO::PARAM_INT);
-            $set->bindValue(':parent', $parent, PDO::PARAM_INT);
+            $set->bindValue(':lower_id', $lower_id, PDO::PARAM_INT);
             $set->execute();
 
             $this->session_refresh($id);
@@ -349,7 +348,6 @@ class ActionTree
     */
     public function move_right(int $id, int $move_more = 0): string
     {
-        $this->list = array_fill(0, 0, 0);
         // retrieves arrays of all elements
         $object = new GenerateTreeArrays($this->db);
         $array = $object->generate_tree(true);
@@ -365,7 +363,7 @@ class ActionTree
             }
         }
 
-        // if not exist conflict moved element. if exist conflict check_is_conflict() "runs in the background"
+        // if not exist conflict moved element. if exist conflict check_is_conflict() return TRUE
         if ($this->check_is_conflict($id, (int)$id_right) == false) {
             $set = $this->db->prepare("UPDATE `tree` SET parent = :parent WHERE id = :id");
             $set->bindValue(':id', $id, PDO::PARAM_INT);
@@ -393,50 +391,31 @@ class ActionTree
      */
     private function check_is_conflict(int $id, int $to): bool
     {
-        // check mutual kinship
-        $result = $this->db->prepare("SELECT COUNT(id) FROM `tree` WHERE id = :id AND parent = :parent");
-        $result->bindValue(':id', $to, PDO::PARAM_INT);
-        $result->bindValue(':parent', $id, PDO::PARAM_INT);
+        // gets all parent from all sub branch
+        $query = "SELECT  group_concat(@id :=
+                     (
+                       SELECT  parent
+                       FROM    tree
+                       WHERE   id = @id
+                     )) AS tree
+FROM    (
+          SELECT  @id := $to
+        ) vars
+  STRAIGHT_JOIN
+  tree
+WHERE   @id IS NOT NULL";
+
+        $result = $this->db->query($query);
         $result->execute();
+        // contain array all parents id
+        $list = explode(",", $result->fetchAll()[0][0]);
 
-        // check mutual kinship
-        if ($result->fetchColumn() == 0) {
-
-            // check if there is no kinship in the sub branch
-            $list = $this->get_all_parents_this_element($to);
-            if (in_array($id, $list) == 0) {
-                // it's okay. conflict no exist.
-                return false;
-            }
-            return true;
-
-        } else {
-            return true;
+        //check whether id moving element not exist in list.
+        if (in_array($id, $list) == 0) {
+            // it's okay. conflict no exist.
+            return false;
         }
-    }
-
-
-    /*
-     * Auxiliary method for functions check_is_conflict() and move_right()
-     * Method gets id folder and returns all parent folder as array list
-     */
-    public $list = array();
-
-    private function get_all_parents_this_element(int $id): array
-    {
-        $result = $this->db->prepare("SELECT parent FROM `tree` WHERE id = :id ");
-        $result->bindValue(':id', $id, PDO::PARAM_INT);
-        $result->execute();
-
-        $parent = $result->fetchColumn();
-
-        array_push($this->list, $parent);
-
-        if ($parent > 0) {
-            $this->get_all_parents_this_element((int)$parent);
-        }
-
-        return $this->list;
+        return true;
     }
 
 

@@ -8,7 +8,11 @@
  */
 declare(strict_types=1);
 
-class ActionFiles extends ActionTree
+namespace Files;
+
+use PDO;
+
+class ActionFiles extends \GenerateTreeBased
 {
     /*
      * Generate 'files' elements for class GenerateTreeArrays
@@ -33,21 +37,22 @@ class ActionFiles extends ActionTree
     /*
     * Method used to add new file on list
     */
-    public function file_add(string $name, int $folder): string
+    public function add(string $name, int $folder): string
     {
         $res = $this->db->prepare("INSERT INTO `files` (`id`, `name`, `folder`) VALUES ('', :name, :folder)");
         $res->bindValue(':name', $name, PDO::PARAM_INT);
         $res->bindValue(':folder', $folder, PDO::PARAM_INT);
         $res->execute();
 
-        $this->session_refresh($folder);
+        $session = new \ActionTree($this->db);
+        $session->session_refresh($folder);
         return 'Added file, name: ' . $name;
     }
 
     /*
     * Method remove file on list
     */
-    public function file_remove(int $id): string
+    public function remove(int $id): string
     {
         $name = $this->return_name((int)$id);
         $res = $this->db->prepare("DELETE FROM `files` WHERE `files`.`id` = :id");
@@ -72,26 +77,28 @@ class ActionFiles extends ActionTree
     /*
     * Method used to rename file
     */
-    public function file_rename(int $id, string $name): string
+    public function rename(int $id, string $name): string
     {
         try {
             $result = $this->db->prepare("UPDATE `files` SET `name` = :name WHERE `files`.`id` = :id");
             $result->bindValue(':id', $id, PDO::PARAM_INT);
             $result->bindValue(':name', $name, PDO::PARAM_STR);
             $result->execute();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return 'Error. Can not rename file.';
         }
-        $this->session_refresh(0);
+
+        $session = new \ActionTree($this->db);
+        $session->session_refresh(0);
         return 'Set new name: ' . $name . ' for file id: ' . $id;
     }
 
     /*
      * Method based for move_up and move_down file
      */
-    private function core_file_move(int $id, int $folder, int $move): bool
+    private function core_move(int $id, int $folder, int $move): bool
     {
-        $object = new GenerateTreeArrays($this->db);
+        $object = new \GenerateTreeArrays($this->db);
         $array = $object->generate_tree(true);
 
         try {
@@ -104,32 +111,33 @@ class ActionFiles extends ActionTree
                         $set->bindValue(':folder', $folder, PDO::PARAM_INT);
                         $set->execute();
 
-                        $this->session_refresh((int)$array['id'][$value + $move]);
+                        $session = new \ActionTree($this->db);
+                        $session->session_refresh((int)$array['id'][$value + $move]);
                         return true;
                     }
                 }
             }
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             return false;
         }
 
     }
 
     /*
-     * Method used to move up file. Based on core_file_move()
+     * Method used to move up file. Based on core_move()
      */
-    public function file_move_up($id, $folder): string
+    public function move_up($id, $folder): string
     {
-        if ($this->core_file_move($id, $folder, -1) == true)
+        if ($this->core_move($id, $folder, -1) == true)
             return 'Moved up, file id: ' . $id . ' name: ' . $this->return_name($id);
     }
 
     /*
-     * Method used to move down file. Based on core_file_move()
+     * Method used to move down file. Based on core_move()
      */
-    public function file_move_down($id, $folder): string
+    public function move_down($id, $folder): string
     {
-        if ($this->core_file_move($id, $folder, +1) == true)
+        if ($this->core_move($id, $folder, +1) == true)
             return 'Moved down, file id: ' . $id . ' name: ' . $this->return_name($id);
     }
 

@@ -26,6 +26,9 @@ unset($dbc);
 
 function __autoload_class($class)
 {
+    // namespace remove from class name
+    $class = explode('\\', $class);
+    $class = end($class);
     try {
         require_once('class/' . $class . '.class.php');
     } catch (exception $e) {

@@ -21,7 +21,7 @@ class GenerateTreeArrays extends GenerateTreeBased
     function __construct($db)
     {
         parent::__construct($db);
-        $this->ActionFiles = new ActionFiles($this->db);
+        $this->ActionFiles = new Files\ActionFiles($this->db);
     }
 
     function __call($method, $args)
@@ -122,8 +122,7 @@ class GenerateTreeArrays extends GenerateTreeBased
         }
         // finally, close the group
         if ($closed_tag == 1) {
-            $this->return .= ']';
-            $this->return .= '},';
+            $this->return .= ']},';
         }
     }
 
